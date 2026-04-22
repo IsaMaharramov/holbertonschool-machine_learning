@@ -12,7 +12,7 @@ def poly_derivative(poly):
     """
     if not isinstance(poly, list) or len(poly) == 0:
         return None
-    
+
     # Check if all elements in the list are numbers
     for coeff in poly:
         if not isinstance(coeff, (int, float)):
@@ -27,10 +27,12 @@ def poly_derivative(poly):
     for i in range(1, len(poly)):
         derivative.append(i * poly[i])
 
-    # Clean up trailing zeros if necessary (e.g., [5, 3, 0, 0] -> [3, 0, 0])
-    # However, for this task, the basic rule usually suffices.
-    # Check if the entire result is effectively 0
+    # If the entire result is 0 (e.g., derivative of [5, 0, 0])
     if not any(derivative):
         return [0]
+
+    # Remove trailing zeros to keep the list as small as possible
+    while len(derivative) > 1 and derivative[-1] == 0:
+        derivative.pop()
 
     return derivative
