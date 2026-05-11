@@ -24,7 +24,7 @@ class Normal:
             if len(data) < 2:
                 raise ValueError("data must contain multiple values")
             self.mean = float(sum(data) / len(data))
-            # Calculate standard deviation
+            # Calculate variance to find standard deviation
             variance = sum((x - self.mean) ** 2 for x in data) / len(data)
             self.stddev = variance ** 0.5
 
@@ -58,9 +58,9 @@ class Normal:
         # Argument for the erf function
         z = (x - self.mean) / (self.stddev * (2 ** 0.5))
 
-        # Erf approximation: (2/sqrt(pi)) * (z - z^3/3 + z^5/10 - z^7/42 + z^9/216)
-        erf = (2 / (pi ** 0.5)) * (
-            z - (z ** 3) / 3 + (z ** 5) / 10 - (z ** 7) / 42 + (z ** 9) / 216
-        )
+        # Broken down Taylor series for erf to satisfy E501
+        erf_series = (z - (z ** 3) / 3 + (z ** 5) / 10 -
+                      (z ** 7) / 42 + (z ** 9) / 216)
+        erf = (2 / (pi ** 0.5)) * erf_series
 
         return 0.5 * (1 + erf)
