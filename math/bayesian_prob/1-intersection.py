@@ -7,7 +7,8 @@ import numpy as np
 
 def intersection(x, n, P, Pr):
     """
-    Calculates the intersection of obtaining data with hypothetical probabilities
+    Calculates the intersection of obtaining data with
+    hypothetical probabilities
     """
     if not isinstance(n, int) or n <= 0:
         raise ValueError("n must be a positive integer")
