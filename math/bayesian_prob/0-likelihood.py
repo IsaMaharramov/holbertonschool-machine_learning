@@ -22,19 +22,20 @@ def likelihood(x, n, P):
     if not np.all((P >= 0) & (P <= 1)):
         raise ValueError("All values in P must be in the range [0, 1]")
 
-    # Manual factorial calculation to avoid extra imports
-    def factorial(n):
+    def factorial(k):
+        """Helper to calculate factorial of k"""
         res = 1
-        for i in range(1, n + 1):
+        for i in range(1, k + 1):
             res *= i
         return res
 
+    # nCr = n! / (x! * (n - x)!)
     n_fact = factorial(n)
     x_fact = factorial(x)
     nx_fact = factorial(n - x)
     n_cr = n_fact / (x_fact * nx_fact)
 
-    # Binomial: nCr * p^x * (1-p)^(n-x)
+    # Binomial Likelihood = nCr * p^x * (1 - p)^(n - x)
     l_hood = n_cr * (P ** x) * ((1 - P) ** (n - x))
 
     return l_hood
