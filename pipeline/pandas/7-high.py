@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Defines a function that sorts a pd.DataFrame by a column value
+Defines a function that orders a pd.DataFrame by a metric column
 """
 import pandas as pd
 

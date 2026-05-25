@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Defines a function that drops missing data points from a pd.DataFrame
+Defines a function that scrubs rows missing crucial parameters
 """
 import pandas as pd
 

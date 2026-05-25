@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Defines a function that updates the index of a pd.DataFrame
+Defines a function that configures the index of a pd.DataFrame
 """
 import pandas as pd
 
