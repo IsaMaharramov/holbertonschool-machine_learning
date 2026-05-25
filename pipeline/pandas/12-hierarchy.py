@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Defines a function to construct a hierarchical MultiIndex dataset
+Concatenates dataframes and creates a hierarchical index
 """
 import pandas as pd
 index = __import__('10-index').index
@@ -8,17 +8,15 @@ index = __import__('10-index').index
 
 def hierarchy(df1, df2):
     """
-    Concatenates data sections and swaps index levels chronologically.
+    Rearranges MultiIndex and filters chronologically
     """
-    df1_indexed = index(df1)
-    df2_indexed = index(df2)
+    df1 = index(df1)
+    df2 = index(df2)
 
-    start, end = 1417411980, 1417417980
-    df1_filtered = df1_indexed.loc[start:end]
-    df2_filtered = df2_indexed.loc[start:end]
+    df1 = df1.loc[1417411980:1417417980]
+    df2 = df2.loc[1417411980:1417417980]
 
-    concat_df = pd.concat([df2_filtered, df1_filtered],
-                          keys=['bitstamp', 'coinbase'])
+    df = pd.concat([df2, df1], keys=['bitstamp', 'coinbase'])
+    df = df.swaplevel(0, 1)
 
-    concat_df = concat_df.swaplevel(0, 1)
-    return concat_df.sort_index()
+    return df.sort_index()
