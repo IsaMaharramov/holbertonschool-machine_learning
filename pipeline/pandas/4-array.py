@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Defines a function that maps portions of a pd.DataFrame to a numpy array
+Module to convert dataframe to numpy array
 """
 import pandas as pd
 
