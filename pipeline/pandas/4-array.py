@@ -4,6 +4,7 @@ Defines a function that converts parts of a pd.DataFrame into a numpy array
 """
 import pandas as pd
 
+
 def array(df):
     """
     Selects the last 10 rows of the High and Close columns

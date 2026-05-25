@@ -4,6 +4,7 @@ Defines a function that calculates descriptive statistics for a dataframe
 """
 import pandas as pd
 
+
 def analyze(df):
     """
     Computes descriptive statistics for all columns except Timestamp.

@@ -4,6 +4,7 @@ Defines a function that loads data from a file as a pd.DataFrame
 """
 import pandas as pd
 
+
 def from_file(filename, delimiter):
     """
     Loads data from a file using a given delimiter

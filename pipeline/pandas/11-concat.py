@@ -5,6 +5,7 @@ Defines a function that concatenates two selected pd.DataFrames
 import pandas as pd
 index = __import__('10-index').index
 
+
 def concat(df1, df2):
     """
     Indexes and concatenates rows up to a point from df2 to df1.

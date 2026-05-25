@@ -5,6 +5,7 @@ Defines a function that builds a specific hierarchical MultiIndex dataframe
 import pandas as pd
 index = __import__('10-index').index
 
+
 def hierarchy(df1, df2):
     """
     Concatenates segments and swaps index levels chronologically.

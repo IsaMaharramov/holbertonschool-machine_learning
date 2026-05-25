@@ -4,6 +4,7 @@ Defines a function that renames and modifies a pd.DataFrame
 """
 import pandas as pd
 
+
 def rename(df):
     """
     Renames Timestamp column, converts values to datetime,

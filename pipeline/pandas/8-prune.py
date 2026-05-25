@@ -4,6 +4,7 @@ Defines a function that drops missing data points from a pd.DataFrame
 """
 import pandas as pd
 
+
 def prune(df):
     """
     Removes any entries where Close has NaN values.

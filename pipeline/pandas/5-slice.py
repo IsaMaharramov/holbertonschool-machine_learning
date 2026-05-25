@@ -4,6 +4,7 @@ Defines a function that slices a pd.DataFrame
 """
 import pandas as pd
 
+
 def slice(df):
     """
     Extracts columns High, Low, Close, and Volume_(BTC)

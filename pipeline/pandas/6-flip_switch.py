@@ -4,6 +4,7 @@ Defines a function that reorders and transposes a pd.DataFrame
 """
 import pandas as pd
 
+
 def flip_switch(df):
     """
     Sorts data in reverse chronological order and transposes it.

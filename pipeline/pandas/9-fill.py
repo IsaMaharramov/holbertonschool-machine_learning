@@ -4,6 +4,7 @@ Defines a function that handles missing values inside a pd.DataFrame
 """
 import pandas as pd
 
+
 def fill(df):
     """
     Fills specific missing values across financial metrics columns.
