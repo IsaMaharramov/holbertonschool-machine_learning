@@ -2,7 +2,6 @@
 """
 Defines a function that handles empty values inside a pd.DataFrame
 """
-import pandas as pd
 
 
 def fill(df):

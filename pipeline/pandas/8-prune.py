@@ -2,7 +2,6 @@
 """
 Defines a function that scrubs rows missing crucial parameters
 """
-import pandas as pd
 
 
 def prune(df):

@@ -2,7 +2,6 @@
 """
 Defines a function that configures the index of a pd.DataFrame
 """
-import pandas as pd
 
 
 def index(df):

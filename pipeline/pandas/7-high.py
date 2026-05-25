@@ -2,7 +2,6 @@
 """
 Defines a function that orders a pd.DataFrame by a metric column
 """
-import pandas as pd
 
 
 def high(df):

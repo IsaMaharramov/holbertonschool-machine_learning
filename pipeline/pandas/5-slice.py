@@ -2,7 +2,6 @@
 """
 Defines a function that cuts a pd.DataFrame into pieces
 """
-import pandas as pd
 
 
 def slice(df):

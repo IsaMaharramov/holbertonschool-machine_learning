@@ -2,7 +2,6 @@
 """
 Defines a function that transposes a pd.DataFrame object
 """
-import pandas as pd
 
 
 def flip_switch(df):
