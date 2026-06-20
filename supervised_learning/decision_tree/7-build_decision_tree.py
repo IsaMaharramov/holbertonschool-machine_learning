@@ -25,8 +25,10 @@ class Node:
 
     def count_nodes_below(self, only_leaves=False):
         """Counts the nodes below this node."""
-        left = self.left_child.count_nodes_below(only_leaves) if self.left_child else 0
-        right = self.right_child.count_nodes_below(only_leaves) if self.right_child else 0
+        left = self.left_child.count_nodes_below(only_leaves) \
+            if self.left_child else 0
+        right = self.right_child.count_nodes_below(only_leaves) \
+            if self.right_child else 0
         if only_leaves:
             return left + right
         return 1 + left + right
@@ -75,9 +77,11 @@ class Node:
                 child.upper = self.upper.copy()
 
         if self.left_child:
-            self.left_child.upper[self.feature] = self.threshold
+            self.left_child.lower[self.feature] = max(
+                self.lower.get(self.feature, -np.inf), self.threshold)
         if self.right_child:
-            self.right_child.lower[self.feature] = self.threshold
+            self.right_child.upper[self.feature] = min(
+                self.upper.get(self.feature, np.inf), self.threshold)
 
         for child in [self.left_child, self.right_child]:
             if child:
@@ -86,17 +90,19 @@ class Node:
     def update_indicator(self):
         """Computes the boolean indicator function for the node."""
         def is_large_enough(x):
-            """Checks if values are greater than lower bounds."""
-            return np.all(np.array([np.greater(x[:, key], self.lower[key]) 
-                                    for key in self.lower.keys()]), axis=0)
+            return np.all(np.array([
+                np.greater(x[:, k], self.lower[k]) for k in self.lower.keys()
+            ]), axis=0)
 
         def is_small_enough(x):
-            """Checks if values are less than or equal to upper bounds."""
-            return np.all(np.array([np.less_equal(x[:, key], self.upper[key]) 
-                                    for key in self.upper.keys()]), axis=0)
+            return np.all(np.array([
+                np.less_equal(x[:, k], self.upper[k])
+                for k in self.upper.keys()
+            ]), axis=0)
 
-        self.indicator = lambda x: np.all(np.array([is_large_enough(x), 
-                                                    is_small_enough(x)]), axis=0)
+        self.indicator = lambda x: np.all(np.array([
+            is_large_enough(x), is_small_enough(x)
+        ]), axis=0)
 
     def pred(self, x):
         """Recursively routes an observation."""
@@ -184,7 +190,8 @@ class Decision_Tree():
         for leaf in leaves:
             leaf.update_indicator()          
         self.predict = lambda A: np.sum(
-            np.array([leaf.indicator(A) * leaf.value for leaf in leaves]), axis=0)
+            np.array([leaf.indicator(A) * leaf.value for leaf in leaves]),
+            axis=0)
 
     def pred(self, x):
         """Fallback prediction method (single observation)."""
@@ -213,6 +220,7 @@ class Decision_Tree():
         value = vals[np.argmax(counts)]
         leaf_child = Leaf(value)
         leaf_child.depth = node.depth + 1
+        leaf_child.subpopulation = sub_population
         leaf_child.sub_population = sub_population
         return leaf_child
 
@@ -231,10 +239,9 @@ class Decision_Tree():
         left_population = np.logical_and(node.sub_population, mask)
         right_population = np.logical_and(node.sub_population, ~mask)
 
-        left_targets = self.target[left_population]
         is_left_leaf = (node.depth + 1 >= self.max_depth or
                         np.sum(left_population) < self.min_pop or
-                        np.unique(left_targets).size <= 1)
+                        np.unique(self.target[left_population]).size <= 1)
 
         if is_left_leaf:
             node.left_child = self.get_leaf_child(node, left_population)
@@ -242,10 +249,9 @@ class Decision_Tree():
             node.left_child = self.get_node_child(node, left_population)
             self.fit_node(node.left_child)
 
-        right_targets = self.target[right_population]
         is_right_leaf = (node.depth + 1 >= self.max_depth or
                          np.sum(right_population) < self.min_pop or
-                         np.unique(right_targets).size <= 1)
+                         np.unique(self.target[right_population]).size <= 1)
 
         if is_right_leaf:
             node.right_child = self.get_leaf_child(node, right_population)

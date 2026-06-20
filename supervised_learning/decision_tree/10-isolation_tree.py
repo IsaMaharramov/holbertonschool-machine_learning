@@ -7,7 +7,6 @@ Leaf = __import__('8-build_decision_tree').Leaf
 
 class Isolation_Random_Tree():
     """Class representing an Isolation Random Tree."""
-    
     def __init__(self, max_depth=10, seed=0, root=None):
         """Initializes the Isolation Random Tree."""
         self.rng = np.random.default_rng(seed)
@@ -45,13 +44,14 @@ class Isolation_Random_Tree():
         self.update_bounds()
         leaves = self.get_leaves()
         for leaf in leaves:
-            leaf.update_indicator()
+            leaf.update_indicator()          
         self.predict = lambda A: np.sum(
-            np.array([leaf.indicator(A) * leaf.value for leaf in leaves]), axis=0)
+            np.array([leaf.indicator(A) * leaf.value for leaf in leaves]),
+            axis=0)
 
     def np_extrema(self, arr):
         """Returns the min and max values."""
-        return np.min(arr), np.max(arr)
+        return np.min(arr), np.max(arr)                
 
     def random_split_criterion(self, node):
         """Selects a random feature and threshold."""
@@ -70,6 +70,7 @@ class Isolation_Random_Tree():
         leaf_child = Leaf(node.depth + 1)
         leaf_child.depth = node.depth + 1
         leaf_child.sub_population = sub_population
+        leaf_child.subpopulation = sub_population
         return leaf_child
 
     def get_node_child(self, node, sub_population):
@@ -91,7 +92,7 @@ class Isolation_Random_Tree():
                         np.sum(left_population) <= self.min_pop)
 
         if is_left_leaf:
-            node.left_child = self.get_leaf_child(node, left_population)
+            node.left_child = self.get_leaf_child(node, left_population)                                                         
         else:
             node.left_child = self.get_node_child(node, left_population)
             self.fit_node(node.left_child)
@@ -109,13 +110,15 @@ class Isolation_Random_Tree():
         """Fits the Isolation Tree out of explanatory distributions."""
         self.split_criterion = self.random_split_criterion
         self.explanatory = explanatory
-        self.root.sub_population = np.ones_like(explanatory.shape[0], dtype='bool')
+        self.root.sub_population = np.ones_like(
+            explanatory.shape[0], dtype='bool')
 
         self.fit_node(self.root)
         self.update_predict()
 
         if verbose == 1:
-            print(f"""  Training finished.
-    - Depth                     : { self.depth()       }
-    - Number of nodes           : { self.count_nodes() }
-    - Number of leaves          : { self.count_nodes(only_leaves=True) }""")
+            print(f"  Training finished.")
+            print(f"    - Depth                     : {self.depth()}")
+            print(f"    - Number of nodes           : {self.count_nodes()}")
+            print(f"    - Number of leaves          : "
+                  f"{self.count_nodes(only_leaves=True)}")

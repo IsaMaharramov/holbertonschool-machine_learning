@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Module for printing Decision Tree components."""
+"""Module for building and printing Decision Tree components."""
 import numpy as np
 
 
@@ -39,7 +39,7 @@ class Node:
         new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:]:
             new_text += ("    |  " + x) + "\n"
-        return new_text.rstrip("\n")
+        return new_text
 
     def right_child_add_prefix(self, text):
         """Adds formatting prefix for right children."""
@@ -47,20 +47,21 @@ class Node:
         new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:]:
             new_text += ("       " + x) + "\n"
-        return new_text.rstrip("\n")
+        return new_text
 
     def __str__(self):
         """String representation of the Node."""
         if self.is_root:
-            res = f"root [feature={self.feature}, threshold={self.threshold}]"
+            res = f"root [feature={self.feature}, threshold={self.threshold}]\n"
         else:
-            res = f"-> node [feature={self.feature}, threshold={self.threshold}]"
+            res = f"-> node [feature={self.feature}, threshold={self.threshold}]\n"
 
         if self.left_child:
-            res += "\n" + self.left_child_add_prefix(str(self.left_child))
+            res += self.left_child_add_prefix(str(self.left_child))
         if self.right_child:
-            res += "\n" + self.right_child_add_prefix(str(self.right_child))
-        return res
+            res += self.right_child_add_prefix(str(self.right_child))
+        
+        return res.rstrip("\n")
 
 
 class Leaf(Node):
