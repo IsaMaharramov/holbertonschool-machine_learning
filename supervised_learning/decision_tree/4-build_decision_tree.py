@@ -81,12 +81,12 @@ class Node:
                 child.lower = self.lower.copy()
                 child.upper = self.upper.copy()
 
-        # If value > threshold, it goes left. So threshold is the LOWER bound.
+        # If value > threshold, goes left (threshold is lower bound)
         if self.left_child:
             self.left_child.lower[self.feature] = max(
                 self.lower.get(self.feature, -np.inf), self.threshold)
-            
-        # If value <= threshold, it goes right. So threshold is the UPPER bound.
+
+        # If value <= threshold, goes right (threshold is upper bound)
         if self.right_child:
             self.right_child.upper[self.feature] = min(
                 self.upper.get(self.feature, np.inf), self.threshold)
