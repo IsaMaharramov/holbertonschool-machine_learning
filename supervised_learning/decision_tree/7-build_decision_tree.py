@@ -52,7 +52,8 @@ class Node:
     def __str__(self):
         """String representation of the Node."""
         prefix = "root" if self.is_root else "node"
-        res = f"{prefix} [feature={self.feature}, threshold={self.threshold}]\n"
+        res = (f"{prefix} [feature={self.feature}, "
+               f"threshold={self.threshold}]\n")
         if self.left_child:
             res += self.left_child_add_prefix(str(self.left_child))
         if self.right_child:
@@ -188,7 +189,7 @@ class Decision_Tree():
         self.update_bounds()
         leaves = self.get_leaves()
         for leaf in leaves:
-            leaf.update_indicator()          
+            leaf.update_indicator()
         self.predict = lambda A: np.sum(
             np.array([leaf.indicator(A) * leaf.value for leaf in leaves]),
             axis=0)
@@ -261,11 +262,11 @@ class Decision_Tree():
 
     def fit(self, explanatory, target, verbose=0):
         """Fits the Decision Tree to the data."""
-        if self.split_criterion == "random": 
+        if self.split_criterion == "random":
             self.split_criterion = self.random_split_criterion
-        else: 
+        else:
             self.split_criterion = self.Gini_split_criterion
-        
+
         self.explanatory = explanatory
         self.target = target
         self.root.sub_population = np.ones_like(self.target, dtype='bool')
@@ -274,11 +275,12 @@ class Decision_Tree():
         self.update_predict()
 
         if verbose == 1:
+            acc = self.accuracy(self.explanatory, self.target)
             print(f"""  Training finished.
     - Depth                     : {self.depth()}
     - Number of nodes           : {self.count_nodes()}
     - Number of leaves          : {self.count_nodes(only_leaves=True)}
-    - Accuracy on training data : {self.accuracy(self.explanatory, self.target)}""")
+    - Accuracy on training data : {acc}""")
 
     def accuracy(self, test_explanatory, test_target):
         """Computes the accuracy of predictions against target labels."""

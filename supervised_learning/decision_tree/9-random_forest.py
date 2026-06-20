@@ -50,12 +50,13 @@ class Random_Forest:
             accuracies.append(T.accuracy(T.explanatory, T.target))
 
         if verbose == 1:
+            acc = self.accuracy(self.explanatory, self.target)
             print(f"""  Training finished.
     - Mean depth                     : {np.array(depths).mean()}
     - Mean number of nodes           : {np.array(nodes).mean()}
     - Mean number of leaves          : {np.array(leaves).mean()}
     - Mean accuracy on training data : {np.array(accuracies).mean()}
-    - Accuracy of the forest on td   : {self.accuracy(self.explanatory, self.target)}""")
+    - Accuracy of the forest on td   : {acc}""")
 
     def accuracy(self, test_explanatory, test_target):
         """Calculates model accuracy on test data."""

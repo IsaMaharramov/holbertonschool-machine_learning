@@ -189,7 +189,7 @@ class Decision_Tree():
         self.update_bounds()
         leaves = self.get_leaves()
         for leaf in leaves:
-            leaf.update_indicator()          
+            leaf.update_indicator()
         self.predict = lambda A: np.sum(
             np.array([leaf.indicator(A) * leaf.value for leaf in leaves]),
             axis=0)
@@ -231,9 +231,9 @@ class Decision_Tree():
         n = sub_X.size
         t = thresholds.size
         c = classes.size
-        
+
         if t == 0:
-            return 0.0, 1.0 
+            return 0.0, 1.0
 
         X_exp = sub_X.reshape(n, 1, 1)
         thresh_exp = thresholds.reshape(1, t, 1)
@@ -255,12 +255,12 @@ class Decision_Tree():
         avg_gini = (L_pop.flatten() / n) * L_gini + \
                    (R_pop.flatten() / n) * R_gini
         best_i = np.argmin(avg_gini)
-        
+
         return thresholds[best_i], avg_gini[best_i]
 
     def Gini_split_criterion(self, node):
         """Evaluates all features to find the optimal Gini split."""
-        X = np.array([self.Gini_split_criterion_one_feature(node, i) 
+        X = np.array([self.Gini_split_criterion_one_feature(node, i)
                       for i in range(self.explanatory.shape[1])])
         i = np.argmin(X[:, 1])
         return i, X[i, 0]
@@ -313,11 +313,11 @@ class Decision_Tree():
 
     def fit(self, explanatory, target, verbose=0):
         """Fits the Decision Tree to the data."""
-        if self.split_criterion == "random": 
+        if self.split_criterion == "random":
             self.split_criterion = self.random_split_criterion
-        else: 
+        else:
             self.split_criterion = self.Gini_split_criterion
-        
+
         self.explanatory = explanatory
         self.target = target
         self.root.sub_population = np.ones_like(self.target, dtype='bool')
