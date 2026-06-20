@@ -60,7 +60,11 @@ class Node:
             res += self.left_child_add_prefix(str(self.left_child))
         if self.right_child:
             res += self.right_child_add_prefix(str(self.right_child))
-        
+
+        if self.is_root:
+            # Keep exactly one trailing newline for the root to separate trees
+            return res.rstrip("\n") + "\n"
+        # Strip trailing newlines for internal nodes to prevent empty branches
         return res.rstrip("\n")
 
 
@@ -83,7 +87,7 @@ class Leaf(Node):
 
     def __str__(self):
         """String representation of the Leaf."""
-        return f"-> leaf [value={self.value}]"
+        return (f"-> leaf [value={self.value}]")
 
 
 class Decision_Tree():
