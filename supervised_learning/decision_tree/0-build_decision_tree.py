@@ -19,9 +19,9 @@ class Node:
 
     def max_depth_below(self):
         """Calculates the maximum depth below this node."""
-        left_depth = self.left_child.max_depth_below() if self.left_child else 0
-        right_depth = self.right_child.max_depth_below() if self.right_child else 0
-        return max(left_depth, right_depth)
+        left = self.left_child.max_depth_below() if self.left_child else 0
+        right = self.right_child.max_depth_below() if self.right_child else 0
+        return max(left, right)
 
 
 class Leaf(Node):

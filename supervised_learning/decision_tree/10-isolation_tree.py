@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Module implementing an Isolation Random Tree for anomaly detection."""
+import numpy as np
 Node = __import__('8-build_decision_tree').Node
 Leaf = __import__('8-build_decision_tree').Leaf
-import numpy as np
 
 
 class Isolation_Random_Tree():
     """Class representing an Isolation Random Tree."""
+    
     def __init__(self, max_depth=10, seed=0, root=None):
         """Initializes the Isolation Random Tree."""
         self.rng = np.random.default_rng(seed)
@@ -44,13 +45,13 @@ class Isolation_Random_Tree():
         self.update_bounds()
         leaves = self.get_leaves()
         for leaf in leaves:
-            leaf.update_indicator()          
+            leaf.update_indicator()
         self.predict = lambda A: np.sum(
             np.array([leaf.indicator(A) * leaf.value for leaf in leaves]), axis=0)
 
     def np_extrema(self, arr):
         """Returns the min and max values."""
-        return np.min(arr), np.max(arr)                
+        return np.min(arr), np.max(arr)
 
     def random_split_criterion(self, node):
         """Selects a random feature and threshold."""
@@ -90,7 +91,7 @@ class Isolation_Random_Tree():
                         np.sum(left_population) <= self.min_pop)
 
         if is_left_leaf:
-            node.left_child = self.get_leaf_child(node, left_population)                                                         
+            node.left_child = self.get_leaf_child(node, left_population)
         else:
             node.left_child = self.get_node_child(node, left_population)
             self.fit_node(node.left_child)
@@ -115,6 +116,6 @@ class Isolation_Random_Tree():
 
         if verbose == 1:
             print(f"""  Training finished.
-    - Depth                     : {self.depth()}
-    - Number of nodes           : {self.count_nodes()}
-    - Number of leaves          : {self.count_nodes(only_leaves=True)}""")
+    - Depth                     : { self.depth()       }
+    - Number of nodes           : { self.count_nodes() }
+    - Number of leaves          : { self.count_nodes(only_leaves=True) }""")

@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Module implementing an Isolation Random Forest for robust anomaly handling."""
-Isolation_Random_Tree = __import__('10-isolation_tree').Isolation_Random_Tree
 import numpy as np
+Isolation_Random_Tree = __import__('10-isolation_tree').Isolation_Random_Tree
 
 
 class Isolation_Random_Forest():
     """Class representing an Isolation Random Forest ensemble."""
+    
     def __init__(self, n_trees=100, max_depth=10, min_pop=1, seed=0):
         """Initializes the Isolation Random Forest."""
         self.numpy_predicts = []
@@ -24,9 +25,10 @@ class Isolation_Random_Forest():
         """Trains the isolation ensemble over unlabeled explanatory distributions."""
         self.explanatory = explanatory
         self.numpy_preds = []
-        depths = [] 
-        nodes = [] 
+        depths = []
+        nodes = []
         leaves = []
+        
         for i in range(n_trees):
             T = Isolation_Random_Tree(max_depth=self.max_depth,
                                       seed=self.seed+i)
@@ -35,11 +37,12 @@ class Isolation_Random_Forest():
             depths.append(T.depth())
             nodes.append(T.count_nodes())
             leaves.append(T.count_nodes(only_leaves=True))
+            
         if verbose == 1:
             print(f"""  Training finished.
-    - Mean depth                     : {np.array(depths).mean()}
-    - Mean number of nodes           : {np.array(nodes).mean()}
-    - Mean number of leaves          : {np.array(leaves).mean()}""")
+    - Mean depth                     : { np.array(depths).mean()      }
+    - Mean number of nodes           : { np.array(nodes).mean()       }
+    - Mean number of leaves          : { np.array(leaves).mean()      }""")
 
     def suspects(self, explanatory, n_suspects):
         """Returns the n_suspects rows in explanatory with smallest mean depth."""

@@ -25,8 +25,10 @@ class Node:
 
     def count_nodes_below(self, only_leaves=False):
         """Counts the nodes below this node."""
-        left = self.left_child.count_nodes_below(only_leaves)
-        right = self.right_child.count_nodes_below(only_leaves)
+        left = self.left_child.count_nodes_below(only_leaves) \
+            if self.left_child else 0
+        right = self.right_child.count_nodes_below(only_leaves) \
+            if self.right_child else 0
         if only_leaves:
             return left + right
         return 1 + left + right
@@ -34,32 +36,39 @@ class Node:
     def left_child_add_prefix(self, text):
         """Adds formatting prefix for left children."""
         lines = text.split("\n")
-        new_text = "    +---> " + lines[0] + "\n"
+        new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:]:
-            new_text += ("    |      " + x) + "\n"
-        return new_text
+            new_text += ("    |  " + x) + "\n"
+        return new_text.rstrip("\n")
 
     def right_child_add_prefix(self, text):
         """Adds formatting prefix for right children."""
         lines = text.split("\n")
-        new_text = "    +---> " + lines[0] + "\n"
+        new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:]:
-            new_text += ("           " + x) + "\n"
-        return new_text
+            new_text += ("       " + x) + "\n"
+        return new_text.rstrip("\n")
 
     def __str__(self):
         """String representation of the Node."""
-        prefix = "root" if self.is_root else "node"
-        res = f"{prefix} [feature={self.feature}, threshold={self.threshold}]\n"
+        if self.is_root:
+            res = (f"root [feature={self.feature}, "
+                   f"threshold={self.threshold}]")
+        else:
+            res = (f"-> node [feature={self.feature}, "
+                   f"threshold={self.threshold}]")
+
         if self.left_child:
-            res += self.left_child_add_prefix(str(self.left_child))
+            res += "\n" + self.left_child_add_prefix(str(self.left_child))
         if self.right_child:
-            res += self.right_child_add_prefix(str(self.right_child))
-        return res.strip()
-    
+            res += "\n" + self.right_child_add_prefix(str(self.right_child))
+        return res
+
     def get_leaves_below(self):
         """Returns a list of all leaves below this node."""
-        return self.left_child.get_leaves_below() + self.right_child.get_leaves_below()
+        left = self.left_child.get_leaves_below() if self.left_child else []
+        right = self.right_child.get_leaves_below() if self.right_child else []
+        return left + right
 
 
 class Leaf(Node):
@@ -81,8 +90,8 @@ class Leaf(Node):
 
     def __str__(self):
         """String representation of the Leaf."""
-        return (f"-> leaf [value={self.value}]")
-    
+        return f"-> leaf [value={self.value}]"
+
     def get_leaves_below(self):
         """Returns the leaf itself as a list."""
         return [self]
@@ -112,11 +121,11 @@ class Decision_Tree():
     def count_nodes(self, only_leaves=False):
         """Counts total nodes in the tree."""
         return self.root.count_nodes_below(only_leaves=only_leaves)
-    
+
     def get_leaves(self):
         """Returns all leaves in the tree."""
         return self.root.get_leaves_below()
-    
+
     def __str__(self):
         """String representation of the entire Tree."""
         return self.root.__str__()
