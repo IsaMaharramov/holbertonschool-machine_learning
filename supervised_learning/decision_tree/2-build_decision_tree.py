@@ -52,9 +52,11 @@ class Node:
     def __str__(self):
         """String representation of the Node."""
         if self.is_root:
-            res = f"root [feature={self.feature}, threshold={self.threshold}]\n"
+            res = (f"root [feature={self.feature}, "
+                   f"threshold={self.threshold}]\n")
         else:
-            res = f"-> node [feature={self.feature}, threshold={self.threshold}]\n"
+            res = (f"-> node [feature={self.feature}, "
+                   f"threshold={self.threshold}]\n")
 
         if self.left_child:
             res += self.left_child_add_prefix(str(self.left_child))
