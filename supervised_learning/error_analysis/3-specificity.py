@@ -24,7 +24,8 @@ def specificity(confusion):
     actual_positives = np.sum(confusion, axis=1)
     total_population = np.sum(confusion)
 
-    true_negatives = total_population - actual_positives - predicted_positives + true_positives
     false_positives = predicted_positives - true_positives
-    
+    true_negatives = (total_population - actual_positives -
+                      predicted_positives + true_positives)
+
     return true_negatives / (true_negatives + false_positives)

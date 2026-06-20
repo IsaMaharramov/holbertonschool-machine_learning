@@ -21,5 +21,5 @@ def precision(confusion):
     """
     true_positives = np.diag(confusion)
     predicted_positives = np.sum(confusion, axis=0)
-    
+
     return true_positives / predicted_positives
