@@ -53,7 +53,7 @@ class Neuron:
         """
         # Linear combination: Z = WX + b
         Z = np.matmul(self.__W, X) + self.__b
-        
+
         # Sigmoid activation function: A = 1 / (1 + e^-Z)
         self.__A = 1 / (1 + np.exp(-Z))
         return self.__A
@@ -72,9 +72,9 @@ class Neuron:
             The logistic regression cost.
         """
         m = Y.shape[1]
-        
+
         # Logistic Regression Cost Function (Cross-Entropy Loss)
-        # Using 1.0000001 - A to prevent np.log(0) which causes division by zero/NaN errors
-        cost = -(1 / m) * np.sum(Y * np.log(A) + (1 - Y) * np.log(1.0000001 - A))
-        
+        loss = Y * np.log(A) + (1 - Y) * np.log(1.0000001 - A)
+        cost = -(1 / m) * np.sum(loss)
+
         return cost
