@@ -77,7 +77,7 @@ class DeepNeuralNetwork:
             else:
                 # Sigmoid activation for hidden layers
                 A = 1 / (1 + np.exp(-Z))
-                
+
             self.__cache["A" + str(i)] = A
 
         return self.__cache["A" + str(self.L)], self.__cache
@@ -96,7 +96,7 @@ class DeepNeuralNetwork:
         """
         A, _ = self.forward_prop(X)
         cost = self.cost(Y, A)
-        
+
         # Convert output probabilities into a one-hot encoded matrix
         prediction = np.where(A == np.max(A, axis=0), 1, 0)
         return prediction, cost
