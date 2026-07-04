@@ -74,7 +74,7 @@ class NeuralNetwork:
             X (numpy.ndarray): Input data.
 
         Returns:
-            tuple: The private attributes __A1 and __A2, respectively.
+            tuple: The private attributes __A1 and __A2.
         """
         Z1 = np.matmul(self.__W1, X) + self.__b1
         self.__A1 = 1 / (1 + np.exp(-Z1))
@@ -109,12 +109,11 @@ class NeuralNetwork:
             Y (numpy.ndarray): Correct labels for the input data.
 
         Returns:
-            tuple: The neuron's prediction and the cost of the network.
+            tuple: The neuron's prediction and the cost.
         """
         self.forward_prop(X)
         cost = self.cost(Y, self.__A2)
         prediction = np.where(self.__A2 >= 0.5, 1, 0)
-        
         return prediction, cost
 
     def gradient_descent(self, X, Y, A1, A2, alpha=0.05):
@@ -123,19 +122,18 @@ class NeuralNetwork:
 
         Args:
             X (numpy.ndarray): Input data.
-            Y (numpy.ndarray): Correct labels for the input data.
-            A1 (numpy.ndarray): The output of the hidden layer.
-            A2 (numpy.ndarray): The predicted output.
+            Y (numpy.ndarray): Correct labels.
+            A1 (numpy.ndarray): Output of the hidden layer.
+            A2 (numpy.ndarray): Predicted output.
             alpha (float): The learning rate.
         """
         m = Y.shape[1]
 
-        # Backward propagation for output layer
+        # Backward propagation
         dZ2 = A2 - Y
         dW2 = np.matmul(dZ2, A1.T) / m
         db2 = np.sum(dZ2) / m
 
-        # Backward propagation for hidden layer
         dZ1 = np.matmul(self.__W2.T, dZ2) * (A1 * (1 - A1))
         dW1 = np.matmul(dZ1, X.T) / m
         db1 = np.sum(dZ1, axis=1, keepdims=True) / m
