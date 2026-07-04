@@ -89,18 +89,13 @@ class NeuralNetwork:
         Calculates the cost of the model using logistic regression.
 
         Args:
-            Y (numpy.ndarray): A numpy.ndarray with shape (1, m) that contains
-                the correct labels for the input data.
-            A (numpy.ndarray): A numpy.ndarray with shape (1, m) containing
-                the activated output of the neuron for each example.
+            Y (numpy.ndarray): Correct labels for the input data.
+            A (numpy.ndarray): Activated output of the neuron.
 
         Returns:
             The logistic regression cost.
         """
         m = Y.shape[1]
-        
-        # Calculate loss avoiding division by zero errors
         loss = Y * np.log(A) + (1 - Y) * np.log(1.0000001 - A)
         cost = -(1 / m) * np.sum(loss)
-        
         return cost

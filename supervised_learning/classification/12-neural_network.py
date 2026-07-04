@@ -111,13 +111,7 @@ class NeuralNetwork:
         Returns:
             tuple: The neuron's prediction and the cost of the network.
         """
-        # Step 1: Forward propagation to get A1 and A2
         self.forward_prop(X)
-        
-        # Step 2: Calculate the cost using the final output layer (A2)
         cost = self.cost(Y, self.__A2)
-        
-        # Step 3: Convert probabilities to discrete 0 or 1 predictions
         prediction = np.where(self.__A2 >= 0.5, 1, 0)
-        
         return prediction, cost
