@@ -80,16 +80,16 @@ class DeepNeuralNetwork:
             Z = np.matmul(W, A_prev) + b
 
             if i == self.L:
-                # Softmax activation -> the output layer
+                # Softmax activation for the output layer
                 t = np.exp(Z - np.max(Z, axis=0))
                 A = t / np.sum(t, axis=0)
             else:
-                # Selectable activation -> hidden layers
+                # Selectable activation for hidden layers
                 if self.__activation == 'sig':
                     A = 1 / (1 + np.exp(-Z))
                 elif self.__activation == 'tanh':
                     A = np.tanh(Z)
-                
+
             self.__cache["A" + str(i)] = A
 
         return self.__cache["A" + str(self.L)], self.__cache
@@ -108,7 +108,7 @@ class DeepNeuralNetwork:
         """
         A, _ = self.forward_prop(X)
         cost = self.cost(Y, A)
-        
+
         # Convert output probabilities into a one-hot encoded matrix
         prediction = np.where(A == np.max(A, axis=0), 1, 0)
         return prediction, cost
