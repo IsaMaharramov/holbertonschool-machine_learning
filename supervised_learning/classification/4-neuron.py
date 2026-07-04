@@ -67,11 +67,8 @@ class Neuron:
             The logistic regression cost.
         """
         m = Y.shape[1]
-        
-        # Split calculation to comply with the 79 character limit
         loss = Y * np.log(A) + (1 - Y) * np.log(1.0000001 - A)
         cost = -(1 / m) * np.sum(loss)
-        
         return cost
 
     def evaluate(self, X, Y):
@@ -91,31 +88,4 @@ class Neuron:
         A = self.forward_prop(X)
         cost = self.cost(Y, A)
         prediction = np.where(A >= 0.5, 1, 0)
-        
         return prediction, cost
-
-    def gradient_descent(self, X, Y, A, alpha=0.05):
-        """
-        Calculates one pass of gradient descent on the neuron.
-
-        Args:
-            X (numpy.ndarray): A numpy.ndarray with shape (nx, m) that
-                contains the input data.
-            Y (numpy.ndarray): A numpy.ndarray with shape (1, m) that contains
-                the correct labels for the input data.
-            A (numpy.ndarray): A numpy.ndarray with shape (1, m) containing
-                the activated output of the neuron for each example.
-            alpha (float): The learning rate.
-        """
-        m = Y.shape[1]
-        
-        # Calculate the derivative of the loss with respect to Z
-        dZ = A - Y
-        
-        # Calculate the gradients for Weights (dW) and bias (db)
-        dW = np.matmul(dZ, X.T) / m
-        db = np.sum(dZ) / m
-        
-        # Update the private attributes
-        self.__W = self.__W - (alpha * dW)
-        self.__b = self.__b - (alpha * db)
