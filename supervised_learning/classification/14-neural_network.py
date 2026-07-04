@@ -128,14 +128,19 @@ class NeuralNetwork:
             alpha (float): The learning rate.
         """
         m = Y.shape[1]
+
+        # Output layer backward propagation
         dZ2 = A2 - Y
         dW2 = np.matmul(dZ2, A1.T) / m
-        db2 = np.sum(dZ2) / m
+        # Keepdims=True ensures db2 is a matrix [[val]] rather than a scalar
+        db2 = np.sum(dZ2, axis=1, keepdims=True) / m
 
+        # Hidden layer backward propagation
         dZ1 = np.matmul(self.__W2.T, dZ2) * (A1 * (1 - A1))
         dW1 = np.matmul(dZ1, X.T) / m
         db1 = np.sum(dZ1, axis=1, keepdims=True) / m
 
+        # Update weights and biases
         self.__W2 = self.__W2 - (alpha * dW2)
         self.__b2 = self.__b2 - (alpha * db2)
         self.__W1 = self.__W1 - (alpha * dW1)
@@ -164,8 +169,8 @@ class NeuralNetwork:
         if alpha <= 0:
             raise ValueError("alpha must be positive")
 
-        for _ in range(iterations):
-            A1, A2 = self.forward_prop(X)
-            self.gradient_descent(X, Y, A1, A2, alpha)
+        for i in range(iterations):
+            self.forward_prop(X)
+            self.gradient_descent(X, Y, self.__A1, self.__A2, alpha)
 
         return self.evaluate(X, Y)
