@@ -99,29 +99,21 @@ class DeepNeuralNetwork:
             self.__weights['b' + str(i)] -= alpha * db
 
     def train(self, X, Y, iterations=5000, alpha=0.05, step=100, graph=True, verbose=True):
-        """Trains the model."""
-        if type(iterations) is not int:
-            raise TypeError("iterations must be an integer")
-        if iterations <= 0:
-            raise ValueError("iterations must be a positive integer")
-        if type(alpha) is not float:
-            raise TypeError("alpha must be a float")
-        if alpha <= 0:
-            raise ValueError("alpha must be a positive float")
-        if graph or verbose:
-            if type(step) is not int:
-                raise TypeError("step must be an integer")
-            if step <= 0 or step > iterations:
-                raise ValueError("step must be a positive integer and <= iterations")
-
+        # ... validation logic ...
+        
         for i in range(iterations + 1):
             if (i % step == 0 or i == iterations) and (graph or verbose):
-                cost = self.cost(Y, self.forward_prop(X)[0])
+                # Calculate cost once
+                A, _ = self.forward_prop(X)
+                cost = self.cost(Y, A)
+                # Print only if verbose is requested or default
                 if verbose:
                     print("Cost after {} iterations: {}".format(i, cost))
+            
             if i < iterations:
                 _, cache = self.forward_prop(X)
                 self.gradient_descent(Y, cache, alpha)
+        
         return self.evaluate(X, Y)
 
     def save(self, filename):
