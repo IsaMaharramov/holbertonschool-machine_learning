@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module that defines a DeepNeuralNetwork for binary classification.
+Module that defines a DeepNeuralNetwork -> binary classification.
 """
 import numpy as np
 
@@ -35,17 +35,17 @@ class DeepNeuralNetwork:
 
     @property
     def L(self):
-        """Getter for the number of layers."""
+        """Getter -> the number of layers."""
         return self.__L
 
     @property
     def cache(self):
-        """Getter for the cache dictionary."""
+        """Getter -> the cache dictionary."""
         return self.__cache
 
     @property
     def weights(self):
-        """Getter for the weights dictionary."""
+        """Getter -> the weights dictionary."""
         return self.__weights
 
     def forward_prop(self, X):
@@ -78,14 +78,7 @@ class DeepNeuralNetwork:
         return prediction, cost
 
     def gradient_descent(self, Y, cache, alpha=0.05):
-        """
-        Calculates one pass of gradient descent on the neural network.
-
-        Args:
-            Y (numpy.ndarray): shape (1, m) containing correct labels.
-            cache (dict): dictionary holding intermediary values of the network.
-            alpha (float): the learning rate.
-        """
+        """Calculates one pass of gradient descent."""
         m = Y.shape[1]
         dZ = cache['A' + str(self.__L)] - Y
 
@@ -102,3 +95,28 @@ class DeepNeuralNetwork:
 
             self.__weights['W' + str(i)] -= alpha * dW
             self.__weights['b' + str(i)] -= alpha * db
+
+    def train(self, X, Y, iterations=5000, alpha=0.05):
+        """
+        Trains the deep neural network.
+
+        Args:
+            X (numpy.ndarray): shape (nx, m) input data.
+            Y (numpy.ndarray): shape (1, m) correct labels.
+            iterations (int): number of iterations.
+            alpha (float): learning rate.
+        """
+        if type(iterations) is not int:
+            raise TypeError("iterations must be an integer")
+        if iterations <= 0:
+            raise ValueError("iterations must be a positive integer")
+        if type(alpha) is not float:
+            raise TypeError("alpha must be a float")
+        if alpha <= 0:
+            raise ValueError("alpha must be positive")
+
+        for i in range(iterations):
+            _, cache = self.forward_prop(X)
+            self.gradient_descent(Y, cache, alpha)
+
+        return self.evaluate(X, Y)
