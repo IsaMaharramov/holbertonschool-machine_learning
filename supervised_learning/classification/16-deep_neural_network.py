@@ -35,11 +35,7 @@ class DeepNeuralNetwork:
                 raise TypeError("layers must be a list of positive integers")
 
             # Determine the size of the previous layer
-            # (or input size nx for the first layer)
-            if i == 0:
-                prev_size = nx
-            else:
-                prev_size = layers[i - 1]
+            prev_size = nx if i == 0 else layers[i - 1]
 
             # He et al. initialization for weights
             self.weights['W' + str(i + 1)] = np.random.randn(
