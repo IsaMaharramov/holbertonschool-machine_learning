@@ -29,7 +29,6 @@ class DeepNeuralNetwork:
 
             prev_size = nx if i == 0 else layers[i - 1]
 
-            # He et al. initialization
             self.__weights['W' + str(i + 1)] = np.random.randn(
                 layers[i], prev_size) * np.sqrt(2 / prev_size)
             self.__weights['b' + str(i + 1)] = np.zeros((layers[i], 1))
@@ -65,17 +64,48 @@ class DeepNeuralNetwork:
         return self.__cache['A' + str(self.__L)], self.__cache
 
     def cost(self, Y, A):
-        """
-        Calculates the cost of the model using logistic regression.
-
-        Args:
-            Y (numpy.ndarray): shape (1, m) with correct labels.
-            A (numpy.ndarray): shape (1, m) with activated outputs.
-
-        Returns:
-            The cost.
-        """
+        """Calculates the cost of the model using logistic regression."""
         m = Y.shape[1]
         cost = -(1 / m) * np.sum(Y * np.log(A) +
                                  (1 - Y) * np.log(1.0000001 - A))
         return cost
+
+    def evaluate(self, X, Y):
+        """Evaluates the neural network's predictions."""
+        A, _ = self.forward_prop(X)
+        cost = self.cost(Y, A)
+        prediction = np.where(A >= 0.5, 1, 0)
+        return prediction, cost
+
+    def gradient_descent(self, Y, cache, alpha=0.05):
+        """
+        Calculates one pass of gradient descent on the neural network.
+
+        Args:
+            Y (numpy.ndarray): shape (1, m) containing correct labels.
+            cache (dict): dictionary holding intermediary values of the network.
+            alpha (float): the learning rate.
+        """
+        m = Y.shape[1]
+        # Calculate dZ -> the final layer
+        dZ = cache['A' + str(self.__L)] - Y
+
+        # Iterate backward from the final layer to the first
+        for i in range(self.__L, 0, -1):
+            A_prev = cache['A' + str(i - 1)]
+            # Get current weights before updating them to calculate next dZ
+            W_curr = self.__weights['W' + str(i)]
+
+            # Calculate gradients
+            dW = np.matmul(dZ, A_prev.T) / m
+            db = np.sum(dZ, axis=1, keepdims=True) / m
+
+            # Calculate dZ -> the previous layer (if not at layer 0)
+            if i > 1:
+                # Derivative of sigmoid: g'(z) = A * (1 - A)
+                dg = A_prev * (1 - A_prev)
+                dZ = np.matmul(W_curr.T, dZ) * dg
+
+            # Update weights and biases
+            self.__weights['W' + str(i)] -= alpha * dW
+            self.__weights['b' + str(i)] -= alpha * db

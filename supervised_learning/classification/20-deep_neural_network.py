@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-Module that defines the DeepNeuralNetwork class.
+Module that defines a DeepNeuralNetwork -> binary classification.
 """
-
 import numpy as np
 
 
@@ -12,20 +11,7 @@ class DeepNeuralNetwork:
     """
 
     def __init__(self, nx, layers):
-        """
-        Initializes the deep neural network.
-
-        Args:
-            nx (int): The number of input features.
-            layers (list): A list representing the number of nodes in each
-                           layer of the network.
-
-        Raises:
-            TypeError: If nx is not an integer.
-            ValueError: If nx is less than 1.
-            TypeError: If layers is not a list or is an empty list.
-            TypeError: If the elements in layers are not all positive integers.
-        """
+        """Initializes the deep neural network."""
         if type(nx) is not int:
             raise TypeError("nx must be an integer")
         if nx < 1:
@@ -41,74 +27,47 @@ class DeepNeuralNetwork:
             if type(layers[i]) is not int or layers[i] <= 0:
                 raise TypeError("layers must be a list of positive integers")
 
-            # Determine the size of the previous layer (or input size for first)
             prev_size = nx if i == 0 else layers[i - 1]
 
-            # He et al. initialization for weights
-            self.__weights['W{}'.format(i + 1)] = np.random.randn(
-                layers[i], prev_size
-            ) * np.sqrt(2 / prev_size)
-            
-            # Zero initialization for biases
-            self.__weights['b{}'.format(i + 1)] = np.zeros((layers[i], 1))
+            self.__weights['W' + str(i + 1)] = np.random.randn(
+                layers[i], prev_size) * np.sqrt(2 / prev_size)
+            self.__weights['b' + str(i + 1)] = np.zeros((layers[i], 1))
 
     @property
     def L(self):
-        """Retrieves the number of layers in the neural network."""
+        """Getter -> the number of layers."""
         return self.__L
 
     @property
     def cache(self):
-        """Retrieves the cache dictionary holding intermediary values."""
+        """Getter -> the cache dictionary."""
         return self.__cache
 
     @property
     def weights(self):
-        """Retrieves the weights dictionary holding weights and biases."""
+        """Getter -> the weights dictionary."""
         return self.__weights
 
     def forward_prop(self, X):
-        """
-        Calculates the forward propagation of the neural network.
-
-        Args:
-            X (numpy.ndarray): Array with shape (nx, m) containing the input
-                               data.
-
-        Returns:
-            The output of the neural network and the cache, respectively.
-        """
+        """Calculates the forward propagation of the neural network."""
         self.__cache['A0'] = X
-        
+
         for i in range(1, self.__L + 1):
-            W = self.__weights['W{}'.format(i)]
-            b = self.__weights['b{}'.format(i)]
-            A_prev = self.__cache['A{}'.format(i - 1)]
-            
+            W = self.__weights['W' + str(i)]
+            b = self.__weights['b' + str(i)]
+            A_prev = self.__cache['A' + str(i - 1)]
+
             Z = np.matmul(W, A_prev) + b
             A = 1 / (1 + np.exp(-Z))
-            
-            self.__cache['A{}'.format(i)] = A
-            
-        return self.__cache['A{}'.format(self.__L)], self.__cache
+            self.__cache['A' + str(i)] = A
+
+        return self.__cache['A' + str(self.__L)], self.__cache
 
     def cost(self, Y, A):
-        """
-        Calculates the cost of the model using logistic regression.
-
-        Args:
-            Y (numpy.ndarray): Array with shape (1, m) containing the correct
-                               labels for the input data.
-            A (numpy.ndarray): Array with shape (1, m) containing the activated
-                               output of the neuron for each example.
-
-        Returns:
-            The cost.
-        """
+        """Calculates the cost of the model using logistic regression."""
         m = Y.shape[1]
-        cost = - (1 / m) * np.sum(
-            Y * np.log(A) + (1 - Y) * np.log(1.0000001 - A)
-        )
+        cost = -(1 / m) * np.sum(Y * np.log(A) +
+                                 (1 - Y) * np.log(1.0000001 - A))
         return cost
 
     def evaluate(self, X, Y):
@@ -116,10 +75,8 @@ class DeepNeuralNetwork:
         Evaluates the neural network's predictions.
 
         Args:
-            X (numpy.ndarray): Array with shape (nx, m) containing the input
-                               data.
-            Y (numpy.ndarray): Array with shape (1, m) containing the correct
-                               labels for the input data.
+            X (numpy.ndarray): shape (nx, m) containing input data.
+            Y (numpy.ndarray): shape (1, m) containing correct labels.
 
         Returns:
             The neuron's prediction and the cost of the network, respectively.
