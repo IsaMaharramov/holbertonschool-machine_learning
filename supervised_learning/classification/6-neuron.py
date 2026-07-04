@@ -2,7 +2,6 @@
 """Module that defines a single neuron performing binary classification."""
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 class Neuron:
@@ -99,12 +98,11 @@ class Neuron:
         dZ = A - Y
         dW = np.matmul(dZ, X.T) / m
         db = np.sum(dZ) / m
-        
+
         self.__W = self.__W - (alpha * dW)
         self.__b = self.__b - (alpha * db)
 
-    def train(self, X, Y, iterations=5000, alpha=0.05,
-              verbose=True, graph=True, step=100):
+    def train(self, X, Y, iterations=5000, alpha=0.05):
         """
         Trains the neuron.
 
@@ -113,9 +111,6 @@ class Neuron:
             Y (numpy.ndarray): Correct labels.
             iterations (int): Number of iterations to train over.
             alpha (float): The learning rate.
-            verbose (bool): Whether or not to print info about training.
-            graph (bool): Whether or not to graph info about training.
-            step (int): The step size for verbose and graph.
 
         Returns:
             tuple: The evaluation of the training data after iterations.
@@ -130,36 +125,8 @@ class Neuron:
         if alpha <= 0:
             raise ValueError("alpha must be positive")
 
-        if verbose or graph:
-            if type(step) is not int:
-                raise TypeError("step must be an integer")
-            if step <= 0 or step > iterations:
-                raise ValueError("step must be positive and <= iterations")
-
-        costs = []
-        steps = []
-
-        # Iterate iterations + 1 times so we catch the 0th and last iteration
-        for i in range(iterations + 1):
+        for _ in range(iterations):
             A = self.forward_prop(X)
-
-            # Record and/or print the cost on steps and the final iteration
-            if i % step == 0 or i == iterations:
-                cost = self.cost(Y, A)
-                costs.append(cost)
-                steps.append(i)
-                if verbose:
-                    print(f"Cost after {i} iterations: {cost}")
-
-            # Do gradient descent only up to the specified iterations
-            if i < iterations:
-                self.gradient_descent(X, Y, A, alpha)
-
-        if graph:
-            plt.plot(steps, costs, 'b-')
-            plt.xlabel('iteration')
-            plt.ylabel('cost')
-            plt.title('Training Cost')
-            plt.show()
+            self.gradient_descent(X, Y, A, alpha)
 
         return self.evaluate(X, Y)
