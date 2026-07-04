@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module that defines a DeepNeuralNetwork for binary classification.
+Module that defines a DeepNeuralNetwork -> binary classification.
 """
 import numpy as np
 
@@ -34,36 +34,33 @@ class DeepNeuralNetwork:
             if type(layers[i]) is not int or layers[i] <= 0:
                 raise TypeError("layers must be a list of positive integers")
 
-            # Determine the size of the previous layer (or nx for the first)
-            if i == 0:
-                prev_size = nx
-            else:
-                prev_size = layers[i - 1]
+            # Determine the size of the previous layer
+            prev_size = nx if i == 0 else layers[i - 1]
 
-            # He et al. initialization for weights (using the missing *)
+            # He et al. initialization -> weights
             self.__weights['W' + str(i + 1)] = np.random.randn(
                 layers[i], prev_size) * np.sqrt(2 / prev_size)
-            
-            # Zero initialization for biases
+
+            # Zero initialization -> biases
             self.__weights['b' + str(i + 1)] = np.zeros((layers[i], 1))
 
     @property
     def L(self):
         """
-        Getter method for the number of layers.
+        Getter -> the number of layers in the neural network.
         """
         return self.__L
 
     @property
     def cache(self):
         """
-        Getter method for the cache dictionary.
+        Getter -> the cache dictionary holding intermediary values.
         """
         return self.__cache
 
     @property
     def weights(self):
         """
-        Getter method for the weights dictionary.
+        Getter -> the weights dictionary holding weights and biases.
         """
         return self.__weights

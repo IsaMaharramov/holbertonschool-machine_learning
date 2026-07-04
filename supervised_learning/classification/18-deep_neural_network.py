@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-Module that defines the DeepNeuralNetwork class.
+Module that defines a DeepNeuralNetwork -> binary classification.
 """
-
 import numpy as np
 
 
@@ -18,13 +17,7 @@ class DeepNeuralNetwork:
         Args:
             nx (int): The number of input features.
             layers (list): A list representing the number of nodes in each
-                           layer of the network.
-
-        Raises:
-            TypeError: If nx is not an integer.
-            ValueError: If nx is less than 1.
-            TypeError: If layers is not a list or is an empty list.
-            TypeError: If the elements in layers are not all positive integers.
+                layer of the network.
         """
         if type(nx) is not int:
             raise TypeError("nx must be an integer")
@@ -41,36 +34,29 @@ class DeepNeuralNetwork:
             if type(layers[i]) is not int or layers[i] <= 0:
                 raise TypeError("layers must be a list of positive integers")
 
-            # Determine the size of the previous layer (or input size for first)
+            # Determine the size of the previous layer
             prev_size = nx if i == 0 else layers[i - 1]
 
-            # He et al. initialization for weights
-            self.__weights['W{}'.format(i + 1)] = np.random.randn(
-                layers[i], prev_size
-            ) * np.sqrt(2 / prev_size)
-            
-            # Zero initialization for biases
-            self.__weights['b{}'.format(i + 1)] = np.zeros((layers[i], 1))
+            # He et al. initialization -> weights
+            self.__weights['W' + str(i + 1)] = np.random.randn(
+                layers[i], prev_size) * np.sqrt(2 / prev_size)
+
+            # Zero initialization -> biases
+            self.__weights['b' + str(i + 1)] = np.zeros((layers[i], 1))
 
     @property
     def L(self):
-        """
-        Retrieves the number of layers in the neural network.
-        """
+        """Getter -> the number of layers in the neural network."""
         return self.__L
 
     @property
     def cache(self):
-        """
-        Retrieves the cache dictionary holding intermediary values.
-        """
+        """Getter -> the cache dictionary holding intermediary values."""
         return self.__cache
 
     @property
     def weights(self):
-        """
-        Retrieves the weights dictionary holding weights and biases.
-        """
+        """Getter -> the weights dictionary holding weights and biases."""
         return self.__weights
 
     def forward_prop(self, X):
@@ -78,29 +64,25 @@ class DeepNeuralNetwork:
         Calculates the forward propagation of the neural network.
 
         Args:
-            X (numpy.ndarray): Array with shape (nx, m) containing the input
-                               data, where nx is the number of input features
-                               and m is the number of examples.
+            X (numpy.ndarray): Array with shape (nx, m) containing input data.
 
         Returns:
             The output of the neural network and the cache, respectively.
         """
-        # Save the input data to cache
         self.__cache['A0'] = X
-        
-        # Iterate through the layers to compute activated outputs
+
         for i in range(1, self.__L + 1):
-            W = self.__weights['W{}'.format(i)]
-            b = self.__weights['b{}'.format(i)]
-            A_prev = self.__cache['A{}'.format(i - 1)]
-            
-            # Linear calculation
+            W = self.__weights['W' + str(i)]
+            b = self.__weights['b' + str(i)]
+            A_prev = self.__cache['A' + str(i - 1)]
+
+            # Linear forward
             Z = np.matmul(W, A_prev) + b
-            
-            # Sigmoid activation function
+
+            # Sigmoid activation
             A = 1 / (1 + np.exp(-Z))
-            
-            # Save the activated output to the cache
-            self.__cache['A{}'.format(i)] = A
-            
-        return self.__cache['A{}'.format(self.__L)], self.__cache
+
+            # Store the activated output
+            self.__cache['A' + str(i)] = A
+
+        return self.__cache['A' + str(self.__L)], self.__cache
