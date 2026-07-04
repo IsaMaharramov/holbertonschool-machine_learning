@@ -16,7 +16,7 @@ class DeepNeuralNetwork:
     def __init__(self, nx, layers):
         """
         Initializes the deep neural network.
-        
+
         Args:
             nx (int): Number of input features.
             layers (list): Number of nodes in each layer of the network.
@@ -37,7 +37,7 @@ class DeepNeuralNetwork:
                 raise TypeError("layers must be a list of positive integers")
 
             prev_size = nx if i == 0 else layers[i - 1]
-            
+
             # He et al. initialization
             self.__weights["W" + str(i + 1)] = np.random.randn(
                 layers[i], prev_size) * np.sqrt(2 / prev_size)
@@ -69,7 +69,7 @@ class DeepNeuralNetwork:
             A_prev = self.__cache["A" + str(i - 1)]
 
             Z = np.matmul(W, A_prev) + b
-            A = 1 / (1 + np.exp(-Z))  # Sigmoid activation for binary
+            A = 1 / (1 + np.exp(-Z))
             self.__cache["A" + str(i)] = A
 
         return self.__cache["A" + str(self.L)], self.__cache
@@ -135,7 +135,7 @@ class DeepNeuralNetwork:
 
         for i in range(iterations + 1):
             A, cache = self.forward_prop(X)
-            
+
             if i % step == 0 or i == iterations:
                 cost = self.cost(Y, A)
                 if verbose:
@@ -159,7 +159,7 @@ class DeepNeuralNetwork:
     def save(self, filename):
         """
         Saves the instance object to a file in pickle format.
-        
+
         Args:
             filename (str): The file to which the object should be saved.
         """
@@ -172,10 +172,10 @@ class DeepNeuralNetwork:
     def load(filename):
         """
         Loads a pickled DeepNeuralNetwork object.
-        
+
         Args:
             filename (str): The file from which the object should be loaded.
-            
+
         Returns:
             The loaded object, or None if filename doesn't exist.
         """
