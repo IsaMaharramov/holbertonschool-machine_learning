@@ -40,6 +40,6 @@ class DeepNeuralNetwork:
             # He et al. initialization -> weights
             self.weights['W' + str(i + 1)] = np.random.randn(
                 layers[i], prev_size) * np.sqrt(2 / prev_size)
-            
+
             # Zero initialization -> biases
             self.weights['b' + str(i + 1)] = np.zeros((layers[i], 1))
