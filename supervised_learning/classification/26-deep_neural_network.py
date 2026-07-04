@@ -35,13 +35,20 @@ class DeepNeuralNetwork:
             self.__weights['b' + str(i + 1)] = np.zeros((layers[i], 1))
 
     @property
-    def L(self): return self.__L
+    def L(self):
+        return self.__L
+
     @property
-    def cache(self): return self.__cache
+    def cache(self):
+        return self.__cache
+
     @property
-    def weights(self): return self.__weights
+    def weights(self):
+        return self.__weights
+
     @property
-    def activation(self): return self.__activation
+    def activation(self):
+        return self.__activation
 
     def forward_prop(self, X):
         """Calculates the forward propagation of the neural network."""
@@ -55,7 +62,10 @@ class DeepNeuralNetwork:
                 exp_Z = np.exp(Z - np.max(Z, axis=0))
                 A = exp_Z / np.sum(exp_Z, axis=0)
             else:
-                A = (1 / (1 + np.exp(-Z))) if self.__activation == 'sig' else np.tanh(Z)
+                if self.__activation == 'sig':
+                    A = 1 / (1 + np.exp(-Z))
+                else:
+                    A = np.tanh(Z)
             self.__cache['A' + str(i)] = A
         return self.__cache['A' + str(self.__L)], self.__cache
 
@@ -88,22 +98,43 @@ class DeepNeuralNetwork:
             self.__weights['W' + str(i)] -= alpha * dW
             self.__weights['b' + str(i)] -= alpha * db
 
-    def train(self, X, Y, iterations=5000, alpha=0.05, step=100, graph=True):
+    def train(self, X, Y, iterations=5000, alpha=0.05, step=100, graph=True, verbose=True):
         """Trains the model."""
-        # Add your validation logic -> iterations/alpha here
+        if type(iterations) is not int:
+            raise TypeError("iterations must be an integer")
+        if iterations <= 0:
+            raise ValueError("iterations must be a positive integer")
+        if type(alpha) is not float:
+            raise TypeError("alpha must be a float")
+        if alpha <= 0:
+            raise ValueError("alpha must be a positive float")
+        if graph or verbose:
+            if type(step) is not int:
+                raise TypeError("step must be an integer")
+            if step <= 0 or step > iterations:
+                raise ValueError("step must be a positive integer and <= iterations")
+
         for i in range(iterations + 1):
-            if i % step == 0 and graph:
-                print("Cost after {} iterations: {}".format(i, self.cost(Y, self.forward_prop(X)[0])))
+            if (i % step == 0 or i == iterations) and (graph or verbose):
+                cost = self.cost(Y, self.forward_prop(X)[0])
+                if verbose:
+                    print("Cost after {} iterations: {}".format(i, cost))
             if i < iterations:
                 _, cache = self.forward_prop(X)
                 self.gradient_descent(Y, cache, alpha)
         return self.evaluate(X, Y)
 
     def save(self, filename):
-        if not filename.endswith('.pkl'): filename += '.pkl'
-        with open(filename, 'wb') as f: pickle.dump(self, f)
+        """Saves the instance object to a file in pickle format."""
+        if not filename.endswith('.pkl'):
+            filename += '.pkl'
+        with open(filename, 'wb') as f:
+            pickle.dump(self, f)
 
     @staticmethod
     def load(filename):
-        if not os.path.exists(filename): return None
-        with open(filename, 'rb') as f: return pickle.load(f)
+        """Loads a pickled DeepNeuralNetwork object."""
+        if not os.path.exists(filename):
+            return None
+        with open(filename, 'rb') as f:
+            return pickle.load(f)
