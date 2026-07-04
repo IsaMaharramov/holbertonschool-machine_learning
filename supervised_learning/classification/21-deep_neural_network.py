@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module that defines a DeepNeuralNetwork for binary classification.
+Module that defines a DeepNeuralNetwork -> binary classification.
 """
 import numpy as np
 
@@ -83,7 +83,7 @@ class DeepNeuralNetwork:
 
         Args:
             Y (numpy.ndarray): shape (1, m) containing correct labels.
-            cache (dict): dictionary holding intermediary values of the network.
+            cache (dict): dictionary holding intermediary values.
             alpha (float): the learning rate.
         """
         m = Y.shape[1]
