@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module that defines a DeepNeuralNetwork for binary classification.
+Module that defines a DeepNeuralNetwork -> binary classification.
 """
 import numpy as np
 
@@ -37,9 +37,9 @@ class DeepNeuralNetwork:
             # Determine the size of the previous layer
             prev_size = nx if i == 0 else layers[i - 1]
 
-            # He et al. initialization for weights
+            # He et al. initialization -> weights
             self.weights['W' + str(i + 1)] = np.random.randn(
                 layers[i], prev_size) * np.sqrt(2 / prev_size)
             
-            # Zero initialization for biases
+            # Zero initialization -> biases
             self.weights['b' + str(i + 1)] = np.zeros((layers[i], 1))
