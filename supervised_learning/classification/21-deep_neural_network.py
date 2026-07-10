@@ -35,17 +35,17 @@ class DeepNeuralNetwork:
 
     @property
     def L(self):
-        """Getter for the number of layers."""
+        """Getter -> the number of layers."""
         return self.__L
 
     @property
     def cache(self):
-        """Getter for the cache dictionary."""
+        """Getter -> the cache dictionary."""
         return self.__cache
 
     @property
     def weights(self):
-        """Getter for the weights dictionary."""
+        """Getter -> the weights dictionary."""
         return self.__weights
 
     def forward_prop(self, X):
