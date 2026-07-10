@@ -8,27 +8,35 @@ import tensorflow as tf
 def create_batch_norm_layer(prev, n, activation):
     """
     Creates a batch normalization layer.
-    
+
     Args:
         prev (tf.Tensor): The activated output of the previous layer.
         n (int): The number of nodes in the layer to be created.
         activation (callable): The activation function to be used.
-        
+
     Returns:
         tf.Tensor: A tensor of the activated output for the layer.
     """
-    # Create the base Dense layer without activation
     init = tf.keras.initializers.VarianceScaling(mode='fan_avg')
     dense_layer = tf.keras.layers.Dense(units=n, kernel_initializer=init)
     Z = dense_layer(prev)
-    
-    # Apply Batch Normalization
-    batch_norm = tf.keras.layers.BatchNormalization(
-        epsilon=1e-7,
-        beta_initializer=tf.keras.initializers.Zeros(),
-        gamma_initializer=tf.keras.initializers.Ones()
+
+    # Manually define the trainable parameters gamma and beta
+    gamma = tf.Variable(initial_value=tf.ones([n]), trainable=True)
+    beta = tf.Variable(initial_value=tf.zeros([n]), trainable=True)
+
+    # Calculate the mean and variance for the current batch
+    mean, variance = tf.nn.moments(Z, axes=[0])
+
+    # Apply batch normalization
+    Z_norm = tf.nn.batch_normalization(
+        x=Z,
+        mean=mean,
+        variance=variance,
+        offset=beta,
+        scale=gamma,
+        variance_epsilon=1e-7
     )
-    Z_norm = batch_norm(Z)
-    
-    # Apply the activation function
+
+    # Return the activated output
     return activation(Z_norm)
