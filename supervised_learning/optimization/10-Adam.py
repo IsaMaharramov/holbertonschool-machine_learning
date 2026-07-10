@@ -8,13 +8,13 @@ import tensorflow as tf
 def create_Adam_op(alpha, beta1, beta2, epsilon):
     """
     Sets up the Adam optimization algorithm using TensorFlow.
-    
+
     Args:
         alpha (float): The learning rate.
         beta1 (float): The weight used for the first moment.
         beta2 (float): The weight used for the second moment.
         epsilon (float): A small number to avoid division by zero.
-        
+
     Returns:
         tf.keras.optimizers.Optimizer: The Adam optimizer instance.
     """
