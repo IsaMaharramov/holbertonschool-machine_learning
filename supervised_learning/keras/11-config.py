@@ -36,5 +36,4 @@ def load_config(filename):
     """
     with open(filename, 'r') as f:
         json_config = f.read()
-    
     return K.models.model_from_json(json_config)
