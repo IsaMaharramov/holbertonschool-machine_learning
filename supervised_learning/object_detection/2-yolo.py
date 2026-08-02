@@ -5,7 +5,7 @@ import numpy as np
 
 
 class Yolo:
-    """Class Yolo that uses the Yolo v3 algorithm to perform object detection"""
+    """Class Yolo that uses Yolo v3 algorithm to perform object detection"""
 
     def __init__(self, model_path, classes_path, class_t, nms_t, anchors):
         """
@@ -38,16 +38,17 @@ class Yolo:
             t_y = output[..., 1]
             t_w = output[..., 2]
             t_h = output[..., 3]
+
             box_confidence = 1 / (1 + np.exp(-output[..., 4:5]))
             box_class_prob = 1 / (1 + np.exp(-output[..., 5:]))
 
-            cx = np.arange(grid_w).reshape(1, grid_w)
-            cx = np.repeat(cx, grid_h, axis=0)
-            cy = np.arange(grid_h).reshape(grid_h, 1)
-            cy = np.repeat(cy, grid_w, axis=1)
+            cx = np.tile(np.arange(0, grid_w),
+                         (grid_h, 1)).reshape(grid_h, grid_w, 1)
+            cy = np.tile(np.arange(0, grid_h),
+                         (grid_w, 1)).T.reshape(grid_h, grid_w, 1)
 
-            cx = np.repeat(cx[..., np.newaxis], anchor_boxes, axis=2)
-            cy = np.repeat(cy[..., np.newaxis], anchor_boxes, axis=2)
+            cx = np.repeat(cx, anchor_boxes, axis=-1)
+            cy = np.repeat(cy, anchor_boxes, axis=-1)
 
             b_x = (1 / (1 + np.exp(-t_x)) + cx) / grid_w
             b_y = (1 / (1 + np.exp(-t_y)) + cy) / grid_h
@@ -78,32 +79,24 @@ class Yolo:
     def filter_boxes(self, boxes, box_confidences, box_class_probs):
         """
         Filters boundary boxes based on their box score.
-
-        Args:
-            boxes: list of numpy.ndarrays of boundary boxes
-            box_confidences: list of numpy.ndarrays of confidences
-            box_class_probs: list of numpy.ndarrays of class probabilities
-
-        Returns:
-            tuple of (filtered_boxes, box_classes, box_scores)
         """
         filtered_boxes = []
         box_classes = []
         box_scores = []
 
         for i in range(len(boxes)):
-            box_score = box_confidences[i] * box_class_probs[i]
-            box_class = np.argmax(box_score, axis=-1)
-            box_score_max = np.max(box_score, axis=-1)
+            scores = box_confidences[i] * box_class_probs[i]
+            classes = np.argmax(scores, axis=-1)
+            class_scores = np.max(scores, axis=-1)
 
-            mask = box_score_max >= self.class_t
+            mask = class_scores >= self.class_t
 
             filtered_boxes.append(boxes[i][mask])
-            box_classes.append(box_class[mask])
-            box_scores.append(box_score_max[mask])
+            box_classes.append(classes[mask])
+            box_scores.append(class_scores[mask])
 
-        filtered_boxes = np.concatenate(filtered_boxes)
-        box_classes = np.concatenate(box_classes)
-        box_scores = np.concatenate(box_scores)
+        filtered_boxes = np.concatenate(filtered_boxes, axis=0)
+        box_classes = np.concatenate(box_classes, axis=0)
+        box_scores = np.concatenate(box_scores, axis=0)
 
         return filtered_boxes, box_classes, box_scores

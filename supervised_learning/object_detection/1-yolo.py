@@ -5,19 +5,11 @@ import numpy as np
 
 
 class Yolo:
-    """Class Yolo that uses the Yolo v3 algorithm to perform object detection"""
+    """Class Yolo that uses Yolo v3 algorithm to perform object detection"""
 
     def __init__(self, model_path, classes_path, class_t, nms_t, anchors):
         """
         Class constructor for Yolo.
-
-        Args:
-            model_path: path to where a Darknet Keras model is stored
-            classes_path: path to where the list of class names used for
-                          the Darknet model can be found
-            class_t: float representing the box score threshold
-            nms_t: float representing the IOU threshold for non-max suppression
-            anchors: numpy.ndarray of shape (outputs, anchor_boxes, 2)
         """
         self.model = K.models.load_model(model_path)
         with open(classes_path, 'r') as f:
@@ -30,15 +22,6 @@ class Yolo:
         """
         Processes Darknet outputs into boundary boxes, confidences,
         and class probabilities.
-
-        Args:
-            outputs: list of numpy.ndarrays containing the predictions
-                     from the Darknet model for a single image
-            image_size: numpy.ndarray containing the image's original size
-                        [image_height, image_width]
-
-        Returns:
-            tuple of (boxes, box_confidences, box_class_probs)
         """
         boxes = []
         box_confidences = []
@@ -55,16 +38,17 @@ class Yolo:
             t_y = output[..., 1]
             t_w = output[..., 2]
             t_h = output[..., 3]
+
             box_confidence = 1 / (1 + np.exp(-output[..., 4:5]))
             box_class_prob = 1 / (1 + np.exp(-output[..., 5:]))
 
-            cx = np.arange(grid_w).reshape(1, grid_w)
-            cx = np.repeat(cx, grid_h, axis=0)
-            cy = np.arange(grid_h).reshape(grid_h, 1)
-            cy = np.repeat(cy, grid_w, axis=1)
+            cx = np.tile(np.arange(0, grid_w),
+                         (grid_h, 1)).reshape(grid_h, grid_w, 1)
+            cy = np.tile(np.arange(0, grid_h),
+                         (grid_w, 1)).T.reshape(grid_h, grid_w, 1)
 
-            cx = np.repeat(cx[..., np.newaxis], anchor_boxes, axis=2)
-            cy = np.repeat(cy[..., np.newaxis], anchor_boxes, axis=2)
+            cx = np.repeat(cx, anchor_boxes, axis=-1)
+            cy = np.repeat(cy, anchor_boxes, axis=-1)
 
             b_x = (1 / (1 + np.exp(-t_x)) + cx) / grid_w
             b_y = (1 / (1 + np.exp(-t_y)) + cy) / grid_h
