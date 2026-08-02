@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Yolo V3 Object Detection module"""
 import cv2
-glob = __import__('glob')
 import numpy as np
+import os
 from tensorflow import keras as K
+
+glob = __import__('glob')
 
 
 class Yolo:
@@ -47,7 +49,6 @@ class Yolo:
             pw = self.anchors[i, :, 0]
             ph = self.anchors[i, :, 1]
 
-            # Holberton quirk: shape[1] is width, shape[2] is height
             input_width = self.model.input.shape[1]
             input_height = self.model.input.shape[2]
 
@@ -173,7 +174,6 @@ class Yolo:
         pimages = []
         image_shapes = []
 
-        # Swap indices to match Holberton's model shape configuration
         input_w = int(self.model.input.shape[1])
         input_h = int(self.model.input.shape[2])
 

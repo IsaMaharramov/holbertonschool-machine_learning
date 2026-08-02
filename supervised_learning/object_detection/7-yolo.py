@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Yolo V3 Object Detection module"""
 import cv2
-glob = __import__('glob')
 import numpy as np
 import os
 from tensorflow import keras as K
+
+glob = __import__('glob')
 
 
 class Yolo:
