@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Yolo V3 Object Detection module"""
-from tensorflow import keras as K
 import numpy as np
+from tensorflow import keras as K
 
 
 class Yolo:
@@ -27,49 +27,43 @@ class Yolo:
         box_confidences = []
         box_class_probs = []
 
-        image_h, image_w = image_size
-        input_h = int(self.model.input.shape[1])
-        input_w = int(self.model.input.shape[2])
+        image_height, image_width = image_size
 
         for i, output in enumerate(outputs):
-            grid_h, grid_w, anchor_boxes, _ = output.shape
+            grid_height, grid_width, anchor_boxes, _ = output.shape
+
+            box_confidence = 1 / (1 + np.exp(-output[..., 4:5]))
+            box_class_prob = 1 / (1 + np.exp(-output[..., 5:]))
+
+            box = np.zeros(output[..., :4].shape)
 
             t_x = output[..., 0]
             t_y = output[..., 1]
             t_w = output[..., 2]
             t_h = output[..., 3]
 
-            # Sigmoid for confidences and class probabilities
-            box_confidence = 1 / (1 + np.exp(-output[..., 4:5]))
-            box_class_prob = 1 / (1 + np.exp(-output[..., 5:]))
-
-            # Reshape grid offsets for automatic numpy broadcasting
-            cx = np.arange(grid_w).reshape(1, grid_w, 1)
-            cy = np.arange(grid_h).reshape(grid_h, 1, 1)
-
-            # Center coordinates relative to grid cells
-            b_x = (1 / (1 + np.exp(-t_x)) + cx) / grid_w
-            b_y = (1 / (1 + np.exp(-t_y)) + cy) / grid_h
-
-            # Anchor dimensions for output scale i
             pw = self.anchors[i, :, 0]
             ph = self.anchors[i, :, 1]
 
-            # Box width and height normalized to model input size
-            b_w = (np.exp(t_w) * pw) / input_w
-            b_h = (np.exp(t_h) * ph) / input_h
+            input_width = self.model.input.shape[1]
+            input_height = self.model.input.shape[2]
 
-            # Convert to corner coordinates relative to original image size
-            x1 = (b_x - (b_w / 2)) * image_w
-            y1 = (b_y - (b_h / 2)) * image_h
-            x2 = (b_x + (b_w / 2)) * image_w
-            y2 = (b_y + (b_h / 2)) * image_h
+            cx = np.tile(np.arange(0, grid_width), (grid_height, 1))
+            cx = np.tile(cx, (anchor_boxes, 1, 1)).transpose(1, 2, 0)
 
-            box = np.zeros((grid_h, grid_w, anchor_boxes, 4))
-            box[..., 0] = x1
-            box[..., 1] = y1
-            box[..., 2] = x2
-            box[..., 3] = y2
+            cy = np.tile(np.arange(0, grid_height), (grid_width, 1)).T
+            cy = np.tile(cy, (anchor_boxes, 1, 1)).transpose(1, 2, 0)
+
+            bx = (1 / (1 + np.exp(-t_x)) + cx) / grid_width
+            by = (1 / (1 + np.exp(-t_y)) + cy) / grid_height
+
+            bw = (pw * np.exp(t_w)) / input_width
+            bh = (ph * np.exp(t_h)) / input_height
+
+            box[..., 0] = (bx - (bw / 2)) * image_width
+            box[..., 1] = (by - (bh / 2)) * image_height
+            box[..., 2] = (bx + (bw / 2)) * image_width
+            box[..., 3] = (by + (bh / 2)) * image_height
 
             boxes.append(box)
             box_confidences.append(box_confidence)
