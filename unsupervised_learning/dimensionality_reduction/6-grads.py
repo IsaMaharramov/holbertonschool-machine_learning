@@ -20,7 +20,7 @@ def grads(Y, P):
             - dY: numpy.ndarray of shape (n, ndim) containing the gradients.
             - Q: numpy.ndarray of shape (n, n) containing the Q affinities.
     """
-    # Get Q affinities and the numerator using the imported function
+    # Get Q affinities and the numerator using the external function
     Q, num = Q_affinities(Y)
 
     # Calculate the gradient difference multiplier: (P - Q) * num

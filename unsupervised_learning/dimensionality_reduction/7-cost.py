@@ -22,7 +22,7 @@ def cost(P, Q):
     Q_safe = np.maximum(Q, 1e-12)
 
     # Calculate KL divergence: sum(P * log(P / Q))
-    # Where P is exactly 0, cost contribution should logically be 0, which 
+    # Where P is exactly 0, cost contribution should logically be 0, which
     # multiplying by the actual P matrix handles automatically.
     C = np.sum(P * np.log(P_safe / Q_safe))
 

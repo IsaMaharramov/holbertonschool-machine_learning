@@ -59,12 +59,12 @@ def tsne(X, ndims=2, idims=50, perplexity=30.0, iterations=1000, lr=500):
 
         # Evaluate and print the cost every 100 iterations
         if i % 100 == 0:
-            # Recompute Q affinities for the newly updated Y to print exact cost
+            # Recompute Q affinities for updated Y to print exact cost
             _, Q_new = grads(Y, P)
             C = cost(P, Q_new)
             print("Cost at iteration {}: {}".format(i, C))
 
-        # Turn off early exaggeration immediately after the 100th iteration ends
+        # Turn off early exaggeration after the 100th iteration ends
         if i == 100:
             P = P / 4.0
 
