@@ -28,9 +28,9 @@ def HP(Di, beta):
     # Calculate the normalized P affinities
     Pi = P_num / sum_P
     
-    # Calculate Shannon Entropy mathematically expanded to prevent log2(0) 
-    # and minimize floating-point operations.
-    # Standard formula: Hi = -np.sum(Pi * np.log2(Pi))
-    Hi = np.log2(sum_P) + np.sum(Di * Pi * beta) / np.log(2)
+    # Calculate Shannon Entropy using the explicit definition
+    # np.maximum prevents -inf errors in log2(0)
+    Pi_safe = np.maximum(Pi, 1e-12)
+    Hi = -np.sum(Pi * np.log2(Pi_safe))
 
     return Hi, Pi

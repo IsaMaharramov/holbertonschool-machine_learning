@@ -28,7 +28,7 @@ def pca(X, ndim):
     # Extract the top `ndim` principal components (columns of Vh.T)
     W = Vh.T[:, :ndim]
 
-    # Transform the centered data by projecting it onto the principal components
+    # Project the centered data onto the principal components
     T = np.matmul(X_centered, W)
 
     return T
