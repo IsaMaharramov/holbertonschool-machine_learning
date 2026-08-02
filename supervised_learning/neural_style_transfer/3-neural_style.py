@@ -48,6 +48,7 @@ class NST:
         self.alpha = alpha
         self.beta = beta
         self.load_model()
+        self.generate_features()
 
     @staticmethod
     def scale_image(image):
@@ -156,3 +157,23 @@ class NST:
 
         # Normalize the Gram matrix by the number of locations (h * w)
         return result / num_locations
+
+    def generate_features(self):
+        """
+        Extracts the features used to calculate neural style cost.
+        Sets the public instance attributes:
+            gram_style_features: list of gram matrices from style layers
+            content_feature: content layer output from the content image
+        """
+        # Pass the preprocessed images through the model
+        style_outputs = self.model(self.style_image)
+        content_outputs = self.model(self.content_image)
+
+        # Calculate Gram matrices for the style layer outputs
+        # Style layers are all outputs except the last one
+        self.gram_style_features = [
+            self.gram_matrix(layer) for layer in style_outputs[:-1]
+        ]
+
+        # Content layer is the last output
+        self.content_feature = content_outputs[-1]
