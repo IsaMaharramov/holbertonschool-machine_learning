@@ -191,8 +191,8 @@ class Yolo:
 
     def show_boxes(self, image, boxes, box_classes, box_scores, file_name):
         """
-        Displays an image with bounding boxes, class names, and scores.
-        Saves image to 'detections/' if 's' key is pressed.
+        Displays image with bounding boxes, class names, and scores.
+        Saves image to 'detections/' directory if 's' key is pressed.
         """
         img = image.copy()
 
