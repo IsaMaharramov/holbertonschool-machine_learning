@@ -95,38 +95,35 @@ class NST:
     def load_model(self):
         """
         Creates the model used to calculate cost.
-        Loads VGG19, intelligently replaces MaxPooling with AveragePooling,
-        and updates the instance attribute with the model instance used to
-        fetch features for style and content extraction.
+        Loads VGG19, replaces MaxPooling with AveragePooling, and updates
+        the model instance to fetch features for style and content extraction.
         """
         vgg = tf.keras.applications.VGG19(include_top=False,
                                           weights='imagenet')
 
-        # We construct a functional model leveraging the original VGG layers
-        # This helps in preventing memory overhead by reusing weights precisely
-        x = vgg.input
-        model_outputs = {}
-
-        for layer in vgg.layers[1:]:
+        def clone_function(layer):
+            """
+            Replaces MaxPooling2D with AveragePooling2D.
+            """
             if isinstance(layer, tf.keras.layers.MaxPooling2D):
-                # Replace with AveragePooling but keep spatial structures intact
-                x = tf.keras.layers.AveragePooling2D(
+                return tf.keras.layers.AveragePooling2D(
                     pool_size=layer.pool_size,
                     strides=layer.strides,
                     padding=layer.padding,
                     name=layer.name
-                )(x)
-            else:
-                x = layer(x)
-                
-            model_outputs[layer.name] = x
+                )
+            return layer
 
-        # Gather target output nodes
-        outputs = [model_outputs[name] for name in self.style_layers]
-        outputs.append(model_outputs[self.content_layer])
+        # Clone model to preserve identical layer names and weights structures
+        custom_vgg = tf.keras.models.clone_model(
+            vgg, clone_function=clone_function)
+        custom_vgg.set_weights(vgg.get_weights())
 
-        # Construct and establish the final read-only network
-        self.model = tf.keras.Model(inputs=vgg.input, outputs=outputs)
-        
-        # The VGG parameters freeze and should not be updated during processing
+        # Grab specific layer outputs for style and content extraction
+        outputs = [custom_vgg.get_layer(name).output
+                   for name in self.style_layers]
+        outputs.append(custom_vgg.get_layer(self.content_layer).output)
+
+        # Construct the final model
+        self.model = tf.keras.Model(inputs=custom_vgg.input, outputs=outputs)
         self.model.trainable = False
