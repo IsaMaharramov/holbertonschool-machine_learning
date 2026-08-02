@@ -25,30 +25,32 @@ def P_affinities(X, tol=1e-5, perplexity=30.0):
     for i in range(n):
         # Extract the pairwise distances excluding the point itself
         Di = np.concatenate((D[i, :i], D[i, i+1:]))
-        
+
         # Isolate the beta for the current point
         beta = betas[i].copy()
         beta_min = None
         beta_max = None
-        
+
         # Perform binary search to find the correct beta value
         while True:
             Hi, Pi = HP(Di, beta)
             H_diff = Hi - H
-            
+
             # Check if entropy falls within the tolerance
             if np.abs(H_diff) <= tol:
                 break
-            
+
             if H_diff > 0:
-                # Entropy is too high (distribution is too spread out) -> increase beta
+                # Entropy is too high (distribution is too spread out)
+                # -> increase beta
                 beta_min = beta[0]
                 if beta_max is None:
                     beta[0] *= 2.0
                 else:
                     beta[0] = (beta[0] + beta_max) / 2.0
             else:
-                # Entropy is too low (distribution is too concentrated) -> decrease beta
+                # Entropy is too low (distribution is too concentrated)
+                # -> decrease beta
                 beta_max = beta[0]
                 if beta_min is None:
                     beta[0] /= 2.0

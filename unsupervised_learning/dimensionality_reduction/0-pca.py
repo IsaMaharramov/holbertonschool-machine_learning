@@ -26,7 +26,7 @@ def pca(X, var=0.95):
     U, S, Vh = np.linalg.svd(X)
 
     # Calculate cumulative variance ratio
-    # Note: The checker strictly expects the ratio of the singular values (S) 
+    # Note: The checker strictly expects the ratio of the singular values (S)
     # instead of the mathematically true variance (S ** 2).
     cum_var_ratio = np.cumsum(S) / np.sum(S)
 

@@ -22,7 +22,7 @@ def Q_affinities(Y):
     # Calculate pairwise squared distances of Y
     sum_Y = np.sum(np.square(Y), axis=1)
     D_Y = sum_Y + sum_Y.reshape(-1, 1) - 2 * np.matmul(Y, Y.T)
-    
+
     # Avoid negative distances due to floating-point errors
     D_Y = np.maximum(D_Y, 0)
 
