@@ -1,0 +1,3 @@
+* [Neural Style Transfer: Creating Art with Deep Learning using tf.keras and eager execution](https://medium.com/tensorflow/neural-style-transfer-creating-art-with-deep-learning-using-tf-keras-and-eager-execution-7d541ac31398)
+* [A Neural Algorithm of Artistic Style](https://arxiv.org/pdf/1508.06576)
+* [Image Style Transfer Using Convolutional Neural Networks](https://s3.eu-west-3.amazonaws.com/hbtn.intranet/uploads/misc/2024/3/3446e4f728cc758110ff36a7fcfafd3d754a9694.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA4MYA5JM5DUTZGMZG%2F20260802%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20260802T005152Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=7b4c4c4938a4f001362081520d4659f2b25365bed2e1e12c006f7f8281c3cb72)
