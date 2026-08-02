@@ -3,7 +3,6 @@
 import cv2
 glob = __import__('glob')
 import numpy as np
-import os
 from tensorflow import keras as K
 
 
@@ -48,6 +47,7 @@ class Yolo:
             pw = self.anchors[i, :, 0]
             ph = self.anchors[i, :, 1]
 
+            # Holberton quirk: shape[1] is width, shape[2] is height
             input_width = self.model.input.shape[1]
             input_height = self.model.input.shape[2]
 
@@ -173,16 +173,18 @@ class Yolo:
         pimages = []
         image_shapes = []
 
-        input_h = int(self.model.input.shape[1])
-        input_w = int(self.model.input.shape[2])
+        # Swap indices to match Holberton's model shape configuration
+        input_w = int(self.model.input.shape[1])
+        input_h = int(self.model.input.shape[2])
 
         for img in images:
-            image_shapes.append((img.shape[0], img.shape[1]))
+            image_shapes.append([img.shape[0], img.shape[1]])
             resized = cv2.resize(
-                img, (input_w, input_h), interpolation=cv2.INTER_CUBIC
+                img,
+                (input_w, input_h),
+                interpolation=cv2.INTER_CUBIC
             )
-            rescaled = resized / 255.0
-            pimages.append(rescaled)
+            pimages.append(resized / 255.0)
 
         pimages = np.array(pimages)
         image_shapes = np.array(image_shapes)
