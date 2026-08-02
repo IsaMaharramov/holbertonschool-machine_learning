@@ -122,12 +122,11 @@ class NST:
 
         # Grab specific layer outputs for style and content extraction
         outputs = [custom_vgg.get_layer(name).output
-                   for name in self.style_layers + [self.content_layer]]
+                   for name in self.style_layers]
+        outputs.append(custom_vgg.get_layer(self.content_layer).output)
 
         # Construct the final model
         self.model = tf.keras.Model(inputs=custom_vgg.input, outputs=outputs)
-
-        # The VGG parameters should freeze and not be updated during training
         self.model.trainable = False
 
     @staticmethod
@@ -146,16 +145,12 @@ class NST:
            len(input_layer.shape) != 4:
             raise TypeError("input_layer must be a tensor of rank 4")
 
-        # The gram matrix G can be computed efficiently using einsum.
-        # 'bijc,bijd->bcd' means we multiply and sum over height (i) and
-        # width (j) dimensions, keeping batch (b) and channels (c and d).
+        # Computes gram matrix efficiently.
         result = tf.linalg.einsum('bijc,bijd->bcd', input_layer, input_layer)
 
-        # Obtain the dimensions to normalize the matrix
         input_shape = tf.shape(input_layer)
         num_locations = tf.cast(input_shape[1] * input_shape[2], tf.float32)
 
-        # Normalize the Gram matrix by the number of locations (h * w)
         return result / num_locations
 
     def generate_features(self):
@@ -165,15 +160,19 @@ class NST:
             gram_style_features: list of gram matrices from style layers
             content_feature: content layer output from the content image
         """
-        # Pass the preprocessed images through the model
-        style_outputs = self.model(self.style_image)
-        content_outputs = self.model(self.content_image)
+        # VGG19 requires inputs to be preprocessed (scaled to 0-255 & centered
+        # around the ImageNet mean). The images are currently strictly [0, 1].
+        preprocessed_style = tf.keras.applications.vgg19.preprocess_input(
+            self.style_image * 255.0)
+        preprocessed_content = tf.keras.applications.vgg19.preprocess_input(
+            self.content_image * 255.0)
 
-        # Calculate Gram matrices for the style layer outputs
-        # Style layers are all outputs except the last one
+        style_outputs = self.model(preprocessed_style)
+        content_outputs = self.model(preprocessed_content)
+
+        # First 5 outputs correspond to style_layers
         self.gram_style_features = [
-            self.gram_matrix(layer) for layer in style_outputs[:-1]
-        ]
-
-        # Content layer is the last output
+            self.gram_matrix(layer) for layer in style_outputs[:-1]]
+            
+        # The last output corresponds to the content_layer
         self.content_feature = content_outputs[-1]
