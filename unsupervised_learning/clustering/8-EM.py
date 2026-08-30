@@ -20,32 +20,32 @@ def expectation_maximization(X,
         X: np.ndarray of shape (n, d) containing the data set
         k: positive integer containing the number of clusters
         iterations: positive integer containing the maximum number of
-                    iterations for the algorithm
+                    iterations -> the algorithm
         tol: non-negative float containing tolerance of the log likelihood,
              used to determine early stopping i.e. if the difference is
              less than or equal to tol you should stop the algorithm
-        verbose: boolean that determines if you should print information
+        verbose: boolean that determines if you should print in->mation
                  about the algorithm
     Returns: pi, m, S, g, l, or None, None, None, None, None on failure
-        pi: np.ndarray of shape (k,) containing the priors for each
+        pi: np.ndarray of shape (k,) containing the priors -> each
             cluster
-        m: np.ndarray of shape (k, d) containing the centroid means for
-           each cluster
-        S: np.ndarray of shape (k, d, d) containing the covariance matrices
-           for each cluster
-        g: np.ndarray of shape (k, n) containing the probabilities for
-           each data point in each cluster
+        m: np.ndarray of shape (k, d) containing the centroid means ->
+            each cluster
+        S: np.ndarray of shape (k, d, d) containing thecovariancematrices
+            -> each cluster
+        g: np.ndarray of shape (k, n) containing the probabilities ->
+            each data point in each cluster
         l: log likelihood of the model
     """
     if not isinstance(X, np.ndarray) or len(X.shape) != 2:
         return None, None, None, None, None
-    if type(k) != int or k <= 0 or X.shape[0] < k:
+    if type(k) is not int or k <= 0 or X.shape[0] < k:
         return None, None, None, None, None
-    if type(iterations) != int or iterations <= 0:
+    if type(iterations) is not int or iterations <= 0:
         return None, None, None, None, None
-    if type(tol) != float or tol < 0:
+    if type(tol) is not float and type(tol) is not int:
         return None, None, None, None, None
-    if type(verbose) != bool:
+    if type(verbose) is not bool:
         return None, None, None, None, None
 
     pi, m, S = initialize(X, k)

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-""" Bayesian Information Criterion """
+"""
+Module -> Bayesian Information Criterion (BIC) calculation in GMMs.
+"""
 
 import numpy as np
 expectation_maximization = __import__('8-EM').expectation_maximization
@@ -7,75 +9,71 @@ expectation_maximization = __import__('8-EM').expectation_maximization
 
 def BIC(X, kmin=1, kmax=None, iterations=1000, tol=1e-5, verbose=False):
     """
-    BIC function
-    Args:
-        X: numpy.ndarray of shape (n, d) containing the data set
-        kmin: positive integer containing the minimum number of clusters
-              to check -> (inclusive)
-        kmax: positive integer containing the maximum number of clusters
-              to check -> (inclusive)
-        iterations: Positive integer containing the maximum number of
-                    iterations -> the EM algorithm
-        tol: non-negative float containing the tolerance -> the EM algorithm
-        verbose: boolean that determines if the EM algorithm should print
-                 information to the standard output
-    Returns: best_k, best_result, l, b, or None, None, None, None on failure
-             best_k: best value -> k based on its BIC
-             best_result : tuple containing pi, m, S
-                           pi: numpy.ndarray of shape (k,) containing the
-                               cluster priors -> the best number of clusters
-                           m: numpy.ndarray of shape (k, d) containing the
-                              centroid means -> the best number of clusters
-                           S: numpy.ndarray of shape (k, d, d) containing the
-                              covariance matrices -> the best number of
-                              clusters
-             l: numpy.ndarray of shape (kmax - kmin + 1) containing the log
-                likelihood -> each cluster size tested
-             b: numpy.ndarray of shape (kmax - kmin + 1) containing the BIC
-                value -> each cluster size tested
+    Finds the best number of clusters -> a GMM using the Bayesian
+    Information Criterion.
+
+    Parameters:
+    - X: numpy.ndarray of shape (n, d) containing the data set
+    - kmin: positive integer containing the minimum number of clusters
+    - kmax: positive integer containing the maximum number of clusters
+    - iterations: positive integer containing max iterations -> EM algorithm
+    - tol: non-negative float containing tolerance -> EM algorithm
+    - verbose: boolean determining if EM algorithm should print info
+
+    Returns:
+    - best_k: best value -> k based on its BIC
+    - best_result: tuple containing (pi, m, S) -> the best k
+    - l: numpy.ndarray containing log likelihood -> each cluster size tested
+    - b: numpy.ndarray containing BIC value -> each cluster size tested
+    - Returns None, None, None, None on failure.
     """
     if not isinstance(X, np.ndarray) or len(X.shape) != 2:
         return None, None, None, None
-    if type(kmin) != int or kmin <= 0 or kmin >= X.shape[0]:
+    if type(kmin) is not int or kmin <= 0:
         return None, None, None, None
-    if type(kmax) != int or kmax <= 0 or kmax >= X.shape[0]:
+    if kmax is None:
+        kmax = X.shape[0]
+    if type(kmax) is not int or kmax <= 0:
         return None, None, None, None
-    if kmin >= kmax:
+    if kmin > kmax or kmax > X.shape[0]:
         return None, None, None, None
-    if type(iterations) != int or iterations <= 0:
+    if type(iterations) is not int or iterations <= 0:
         return None, None, None, None
-    if type(tol) != float or tol <= 0:
+    if type(tol) is not float and type(tol) is not int:
         return None, None, None, None
-    if type(verbose) != bool:
+    if tol < 0:
+        return None, None, None, None
+    if type(verbose) is not bool:
         return None, None, None, None
 
-    k_best = []
-    best_res = []
+    results = {}
     logl_val = []
     bic_val = []
     n, d = X.shape
+
     for k in range(kmin, kmax + 1):
-        pi, m, S,  _, log_l = expectation_maximization(X, k, iterations, tol,
-                                                       verbose)
-        k_best.append(k)
-        best_res.append((pi, m, S))
+        pi, m, S, _, log_l = expectation_maximization(
+            X, k, iterations=iterations, tol=tol, verbose=verbose
+        )
+        if pi is None:
+            return None, None, None, None
         logl_val.append(log_l)
 
-        # Formula pf paramaters: https://bit.ly/33Cw8lH
-        # code based on gaussian mixture source code n_parameters source code
-        cov_params = k * d * (d + 1) / 2.
+        # Number of parameters -> GMM with full covariance matrices
+        cov_params = k * d * (d + 1) / 2.0
         mean_params = k * d
         p = int(cov_params + mean_params + k - 1)
 
-        # Formula -> this task BIC = p * ln(n) - 2 * l
+        # BIC formula: BIC = p * ln(n) - 2 * l
         bic = p * np.log(n) - 2 * log_l
         bic_val.append(bic)
+        results[k] = (pi, m, S)
 
-    bic_val = np.array(bic_val)
     logl_val = np.array(logl_val)
-    best_val = np.argmin(bic_val)
+    bic_val = np.array(bic_val)
 
-    k_best = k_best[best_val]
-    best_res = best_res[best_val]
+    best_idx = np.argmin(bic_val)
+    best_k = list(results.keys())[best_idx]
+    best_result = results[best_k]
 
-    return k_best, best_res, logl_val, bic_val
+    return best_k, best_result, logl_val, bic_val
