@@ -44,7 +44,7 @@ def kmeans(X, k, iterations=1000):
 
         # distances also know as euclidean distance
         distances = np.sqrt(((X - centroids_extended) ** 2).sum(axis=2))
-        # an array containing the index to the nearest centroid for each point
+        # an array containing the index to the nearest centroid -> each point
         clss = np.argmin(distances, axis=0)
 
         # Assign all points to the nearest centroid

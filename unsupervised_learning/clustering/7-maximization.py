@@ -49,7 +49,7 @@ def maximization(X, g):
     for i in range(k):
 
         # Mu components
-        # Needed to adjust dimensions for fitting the covariance
+        # Needed to adjust dimensions -> fitting the covariance
         mu_up = np.sum((gaussian_components[i, :, np.newaxis] * X), axis=0)
         mu_down = np.sum(gaussian_components[i], axis=0)
         centroid_updated[i] = mu_up / mu_down

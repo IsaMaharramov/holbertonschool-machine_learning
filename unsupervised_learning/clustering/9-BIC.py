@@ -11,28 +11,28 @@ def BIC(X, kmin=1, kmax=None, iterations=1000, tol=1e-5, verbose=False):
     Args:
         X: numpy.ndarray of shape (n, d) containing the data set
         kmin: positive integer containing the minimum number of clusters
-              to check for (inclusive)
+              to check -> (inclusive)
         kmax: positive integer containing the maximum number of clusters
-              to check for (inclusive)
+              to check -> (inclusive)
         iterations: Positive integer containing the maximum number of
-                    iterations for the EM algorithm
-        tol: non-negative float containing the tolerance for the EM algorithm
+                    iterations -> the EM algorithm
+        tol: non-negative float containing the tolerance -> the EM algorithm
         verbose: boolean that determines if the EM algorithm should print
                  information to the standard output
     Returns: best_k, best_result, l, b, or None, None, None, None on failure
-             best_k: best value for k based on its BIC
+             best_k: best value -> k based on its BIC
              best_result : tuple containing pi, m, S
                            pi: numpy.ndarray of shape (k,) containing the
-                               luster priors for the best number of clusters
+                               cluster priors -> the best number of clusters
                            m: numpy.ndarray of shape (k, d) containing the
-                              centroid means for the best number of clusters
+                              centroid means -> the best number of clusters
                            S: numpy.ndarray of shape (k, d, d) containing the
-                              covariance matrices for the best number of
+                              covariance matrices -> the best number of
                               clusters
              l: numpy.ndarray of shape (kmax - kmin + 1) containing the log
-                likelihood for each cluster size tested
+                likelihood -> each cluster size tested
              b: numpy.ndarray of shape (kmax - kmin + 1) containing the BIC
-                value for each cluster size tested
+                value -> each cluster size tested
     """
     if not isinstance(X, np.ndarray) or len(X.shape) != 2:
         return None, None, None, None
@@ -67,7 +67,7 @@ def BIC(X, kmin=1, kmax=None, iterations=1000, tol=1e-5, verbose=False):
         mean_params = k * d
         p = int(cov_params + mean_params + k - 1)
 
-        # Formula for this task BIC = p * ln(n) - 2 * l
+        # Formula -> this task BIC = p * ln(n) - 2 * l
         bic = p * np.log(n) - 2 * log_l
         bic_val.append(bic)
 
