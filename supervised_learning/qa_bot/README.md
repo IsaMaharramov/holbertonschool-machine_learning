@@ -1,0 +1,1 @@
+This directory contains work with QA Bot, Semantic Search, and BERT architecture
