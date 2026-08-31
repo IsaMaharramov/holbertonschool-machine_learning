@@ -1,0 +1,1 @@
+* [MIT 6.S191: RNN](https://www.youtube.com/watch?v=_h66BW-xNgk)
