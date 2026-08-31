@@ -1,0 +1,1 @@
+* [[Natural Language Processing|TF-IDF Intuition| Text Prerocessing](https://www.youtube.com/watch?v=D2V1okCEsiE&list=PLZoTAELRMXVMdJ5sqbCK2LiM0HhQVWNzm&index=8)
