@@ -36,8 +36,8 @@ class LSTMCell:
         c_next = f * c_prev + u * c_tilde
         o = 1 / (1 + np.exp(-(np.matmul(concat, self.Wo) + self.bo)))
         h_next = o * np.tanh(c_next)
-        
+
         y_linear = np.matmul(h_next, self.Wy) + self.by
         y = np.exp(y_linear) / np.sum(np.exp(y_linear), axis=1, keepdims=True)
-        
+
         return h_next, c_next, y

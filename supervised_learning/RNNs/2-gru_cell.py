@@ -30,12 +30,12 @@ class GRUCell:
         concat = np.concatenate((h_prev, x_t), axis=1)
         z = 1 / (1 + np.exp(-(np.matmul(concat, self.Wz) + self.bz)))
         r = 1 / (1 + np.exp(-(np.matmul(concat, self.Wr) + self.br)))
-        
+
         concat_h = np.concatenate((r * h_prev, x_t), axis=1)
         h_tilde = np.tanh(np.matmul(concat_h, self.Wh) + self.bh)
-        
+
         h_next = (1 - z) * h_prev + z * h_tilde
         y_linear = np.matmul(h_next, self.Wy) + self.by
         y = np.exp(y_linear) / np.sum(np.exp(y_linear), axis=1, keepdims=True)
-        
+
         return h_next, y
