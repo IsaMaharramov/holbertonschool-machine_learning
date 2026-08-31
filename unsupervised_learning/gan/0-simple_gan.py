@@ -5,10 +5,13 @@ from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 class Simple_GAN(keras.Model):
     """ Simple GAN class """
-    
-    def __init__(self, generator, discriminator, latent_generator, real_examples, batch_size=200, disc_iter=2, learning_rate=.005):
+
+    def __init__(self, generator, discriminator, latent_generator,
+                 real_examples, batch_size=200, disc_iter=2,
+                 learning_rate=.005):
         """ Initialize the Simple GAN model """
         super().__init__()
         self.latent_generator = latent_generator
@@ -23,14 +26,25 @@ class Simple_GAN(keras.Model):
         self.beta_2 = .9
 
         # Define the generator loss and optimizer:
-        self.generator.loss = lambda x: tf.keras.losses.MeanSquaredError()(x, tf.ones(x.shape))
-        self.generator.optimizer = keras.optimizers.Adam(learning_rate=self.learning_rate, beta_1=self.beta_1, beta_2=self.beta_2)
-        self.generator.compile(optimizer=self.generator.optimizer, loss=self.generator.loss)
+        self.generator.loss = lambda x: tf.keras.losses.MeanSquaredError()(
+            x, tf.ones(x.shape))
+        self.generator.optimizer = keras.optimizers.Adam(
+            learning_rate=self.learning_rate,
+            beta_1=self.beta_1,
+            beta_2=self.beta_2)
+        self.generator.compile(optimizer=self.generator.optimizer,
+                               loss=self.generator.loss)
 
         # Define the discriminator loss and optimizer:
-        self.discriminator.loss = lambda x, y: tf.keras.losses.MeanSquaredError()(x, tf.ones(x.shape)) + tf.keras.losses.MeanSquaredError()(y, -1*tf.ones(y.shape))
-        self.discriminator.optimizer = keras.optimizers.Adam(learning_rate=self.learning_rate, beta_1=self.beta_1, beta_2=self.beta_2)
-        self.discriminator.compile(optimizer=self.discriminator.optimizer, loss=self.discriminator.loss)
+        self.discriminator.loss = lambda x, y: (
+            tf.keras.losses.MeanSquaredError()(x, tf.ones(x.shape)) +
+            tf.keras.losses.MeanSquaredError()(y, -1 * tf.ones(y.shape)))
+        self.discriminator.optimizer = keras.optimizers.Adam(
+            learning_rate=self.learning_rate,
+            beta_1=self.beta_1,
+            beta_2=self.beta_2)
+        self.discriminator.compile(optimizer=self.discriminator.optimizer,
+                                   loss=self.discriminator.loss)
 
     def get_fake_sample(self, size=None, training=False):
         """ Generator of fake samples of size batch_size """
@@ -45,38 +59,35 @@ class Simple_GAN(keras.Model):
         sorted_indices = tf.range(tf.shape(self.real_examples)[0])
         random_indices = tf.random.shuffle(sorted_indices)[:size]
         return tf.gather(self.real_examples, random_indices)
- 
+
     def train_step(self, useless_argument):
         """ Overloading train_step() """
         for _ in range(self.disc_iter):
-            # compute the loss for the discriminator in a tape watching the discriminator's weights
             with tf.GradientTape() as disc_tape:
-                # get a real sample
                 real_sample = self.get_real_sample()
-                # get a fake sample
                 fake_sample = self.get_fake_sample(training=True)
-                
+
                 real_output = self.discriminator(real_sample, training=True)
                 fake_output = self.discriminator(fake_sample, training=True)
-                
-                # compute the loss discr_loss of the discriminator on real and fake samples
-                discr_loss = self.discriminator.loss(real_output, fake_output)
-                
-            # apply gradient descent once to the discriminator
-            gradients_of_discriminator = disc_tape.gradient(discr_loss, self.discriminator.trainable_variables)
-            self.discriminator.optimizer.apply_gradients(zip(gradients_of_discriminator, self.discriminator.trainable_variables))
 
-        # compute the loss for the generator in a tape watching the generator's weights 
+                discr_loss = self.discriminator.loss(real_output, fake_output)
+
+            grad_d = disc_tape.gradient(
+                discr_loss,
+                self.discriminator.trainable_variables)
+            self.discriminator.optimizer.apply_gradients(
+                zip(grad_d, self.discriminator.trainable_variables))
+
         with tf.GradientTape() as gen_tape:
-            # get a fake sample 
             fake_sample = self.get_fake_sample(training=True)
             fake_output = self.discriminator(fake_sample, training=False)
-            
-            # compute the loss gen_loss of the generator on this sample
+
             gen_loss = self.generator.loss(fake_output)
-            
-        # apply gradient descent to the generator
-        gradients_of_generator = gen_tape.gradient(gen_loss, self.generator.trainable_variables)
-        self.generator.optimizer.apply_gradients(zip(gradients_of_generator, self.generator.trainable_variables))
+
+        grad_g = gen_tape.gradient(
+            gen_loss,
+            self.generator.trainable_variables)
+        self.generator.optimizer.apply_gradients(
+            zip(grad_g, self.generator.trainable_variables))
 
         return {"discr_loss": discr_loss, "gen_loss": gen_loss}
