@@ -1,0 +1,1 @@
+This directory contains initial work with reinforcement learning through Q Learning
