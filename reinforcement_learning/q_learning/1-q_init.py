@@ -1,22 +1,19 @@
 #!/usr/bin/env python3
-"""
-Defines function that loads pre-made FrozenLakeEnv environment
-from OpenAI's gym
-"""
+"""Q init"""
+
+import numpy as np
 
 
-import gym
-
-
-def load_frozen_lake(desc=None, map_name=None, is_slippery=False):
+def q_init(env):
     """
-    Loads pre-made FrozenLakeEnv environment from OpenAI's gym
-
-    returns:
-        the environment
+    Initialize Q-table
+    Args:
+        env: is the FrozenLakeEnv instance
+    Returns: the Q-table as a numpy.ndarray of zeros
     """
-    env = gym.make("FrozenLake-v0",
-                   desc=desc,
-                   map_name=map_name,
-                   is_slippery=is_slippery)
-    return env
+    action = env.action_space.n
+    states = env.observation_space.n
+
+    q_table = np.zeros((states, action))
+
+    return q_table

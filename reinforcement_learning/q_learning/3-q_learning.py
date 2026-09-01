@@ -1,55 +1,69 @@
 #!/usr/bin/env python3
-"""
-Defines function that performs Q-learning
-"""
+"""Q learning"""
 
-
-import gym
 import numpy as np
+epsilon_greedy = __import__('2-epsilon_greedy').epsilon_greedy
 
 
 def train(env, Q, episodes=5000, max_steps=100, alpha=0.1, gamma=0.99,
           epsilon=1, min_epsilon=0.1, epsilon_decay=0.05):
     """
-    Performs Q-learning
-
-    returns:
-        Q, total_rewards
+    Q-learning
+    Args:
+        env:  is the FrozenLakeEnv instance
+        Q: is a numpy.ndarray containing the Q-table
+        episodes:  is the total number of episodes to train over
+        max_steps: is the maximum number of steps per episode
+        alpha: is the learning rate
+        gamma: is the discount rate
+        epsilon: is the initial threshold for epsilon greedy
+        min_epsilon: is the minimum value that epsilon should decay to
+        epsilon_decay: is the decay rate for updating epsilon between
+                       episodes When the agent falls in a hole,
+                       the reward should be updated to be -1
+    Returns: Q, total_rewards
+            Q: is the updated Q-table
+            total_rewards: is a list containing the rewards per episode
     """
-    total_rewards = []
-    max_epsilon = epsilon
+
+    # store rewards
+    rewards = []
+
+    # let the agent play for defined number of episodes
     for episode in range(episodes):
-        current_state = env.reset()
+        # reset the environment for each episode
+        state = env.reset()
+        # to keep track whether the agent dies
         done = False
+        # keep track of rewards at each episode
+        total_rewards = 0
 
-        total_episode_reward = 0
-
+        # run for each episode
         for step in range(max_steps):
-            p = np.random.uniform(0, 1)
-            if p < epsilon:
-                # exploring
-                action = np.random.randint(Q.shape[1])
-            else:
-                # exploiting
-                action = np.argmax(Q[current_state, :])
+            action = epsilon_greedy(Q, state, epsilon)
+            new_state, reward, done, inf = env.step(action)
 
-            next_state, reward, done, _ = env.step(action)
-
-            if done and reward == 0:
-                reward = -1
-
-            Q[current_state, action] = (
-                Q[current_state, action] * (1 - alpha) + alpha * (
-                    reward + gamma * np.max(Q[next_state, :])))
-            total_episode_reward += reward
-
-            if done:
+            # update the state-action reward value in the q-table
+            # using the Bellman equation
+            # Q(s,a) = Q(s,a) + learning_rate*[Reward(s,a) +
+            # gamma*max Q(snew,anew) - Q(s,a)]
+            Q[state, action] = Q[state, action] + alpha * \
+                (reward + gamma * np.max(Q[new_state, :]) - Q[state, action])
+            # define new state
+            state = new_state
+            # end the episode if agent dies
+            if done is True:
+                if reward == 0.0:
+                    total_rewards = -1
+                total_rewards += reward
                 break
+            total_rewards += reward
 
-            current_state = next_state
+        # reduce the epsilon after each episode
+        epsilon = min_epsilon + (1 - min_epsilon) * \
+            np.exp(-epsilon_decay * episode)
 
-        epsilon = (min_epsilon + (max_epsilon - min_epsilon) *
-                   np.exp(-epsilon_decay * episode))
-        total_rewards.append(total_episode_reward)
+        # keep track of total rewards for each episode
+        rewards.append(total_rewards)
 
-    return Q, total_rewards
+    return Q, rewards

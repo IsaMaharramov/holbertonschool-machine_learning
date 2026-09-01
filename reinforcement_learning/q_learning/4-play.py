@@ -1,28 +1,34 @@
 #!/usr/bin/env python3
-"""
-Defines function that has trained agent play an episode
-"""
+"""Q learning"""
 
-
-import gym
 import numpy as np
 
 
 def play(env, Q, max_steps=100):
     """
-    Has trained agent play an episode
-
-    returns:
-        total rewards for the episode
+    play
+    Args:
+        env: is the FrozenLakeEnv instance
+        Q: umpy.ndarray containing the Q-table
+        max_steps: the maximum number of steps in the episode
+    Returns: total rewards for the episode
     """
-    current_state = env.reset()
-    done = False
+    # reset the state
+    state = env.reset()
     env.render()
+    done = False
+
     for step in range(max_steps):
-        action = np.argmax(Q[current_state, :])
-        next_state, reward, done, _ = env.step(action)
+        # take the action with maximum expected future reward form the q-table
+        action = np.argmax(Q[state, :])
+        new_state, reward, done, info = env.step(action)
+
+        if done is True:
+            env.render()
+            return reward
         env.render()
-        if done:
-            break
-        current_state = next_state
+        state = new_state
+
+    # close the connection to the environment
+    env.close()
     return reward
