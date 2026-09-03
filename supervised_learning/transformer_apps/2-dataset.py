@@ -9,7 +9,7 @@ from setup import load_pt2en
 
 class Dataset:
     """
-    Dataset class that loads and preps a dataset for machine translation
+    Dataset class that loads and preps a dataset for machinetranslation
     """
 
     def __init__(self):
@@ -68,7 +68,7 @@ class Dataset:
 
         Args:
             pt: tf.Tensor containing the Portuguese sentence
-            en: tf.Tensor containing the corresponding English sentence
+            en: tf.Tensor containing the corresponding Englishsentence
 
         Returns:
             pt_tokens, en_tokens
@@ -95,7 +95,7 @@ class Dataset:
 
         Args:
             pt: tf.Tensor containing the Portuguese sentence
-            en: tf.Tensor containing the corresponding English sentence
+            en: tf.Tensor containing the corresponding Englishsentence
 
         Returns:
             pt_tokens, en_tokens
