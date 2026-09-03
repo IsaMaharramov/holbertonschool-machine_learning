@@ -1,0 +1,1 @@
+* [Notes on BERT tokenizer and model](https://medium.com/@anmolkohli/my-notes-on-bert-tokenizer-and-model-98dc22d0b64)
