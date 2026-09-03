@@ -3,6 +3,7 @@
 RNN Decoder Module
 """
 import tensorflow as tf
+SelfAttention = __import__('1-self_attention').SelfAttention
 
 
 class RNNDecoder(tf.keras.layers.Layer):
@@ -22,6 +23,7 @@ class RNNDecoder(tf.keras.layers.Layer):
             recurrent_initializer='glorot_uniform'
         )
         self.F = tf.keras.layers.Dense(vocab)
+        self.attention = SelfAttention(units)
 
     def call(self, x, s_prev, hidden_states):
         """
@@ -34,25 +36,22 @@ class RNNDecoder(tf.keras.layers.Layer):
             y: tensor of shape (batch, vocab) with the output word one-hot
             s: tensor of shape (batch, units) with new decoder hidden state
         """
-        SelfAttention = __import__('1-self_attention').SelfAttention
-        attention = SelfAttention(s_prev.shape[1])
-
-        context, weights = attention(s_prev, hidden_states)
+        context, weights = self.attention(s_prev, hidden_states)
         x = self.embedding(x)
 
         # Expand context vector to shape (batch, 1, units)
         context_expanded = tf.expand_dims(context, 1)
 
-        # Concatenate context vector with x
+        # Concatenate context vector with embedded x
         x = tf.concat([context_expanded, x], axis=-1)
 
         # Pass concatenated vector to the GRU
         output, s = self.gru(x)
 
-        # Reshape the output to (batch, units)
+        # Reshape output to (batch, units) for the dense layer
         output = tf.reshape(output, (-1, output.shape[2]))
 
-        # Pass the output through the Dense layer to get vocabulary scores
+        # Pass through Dense layer to produce vocabulary logits
         y = self.F(output)
 
         return y, s
