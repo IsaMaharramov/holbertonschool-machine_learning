@@ -3,7 +3,7 @@
 Dataset module for Transformer Applications
 """
 import tensorflow as tf
-from transformers import AutoTokenizer
+import transformers
 from setup import load_pt2en
 
 
@@ -36,10 +36,10 @@ class Dataset:
         Returns:
             tokenizer_pt, tokenizer_en
         """
-        pt_tokenizer_base = AutoTokenizer.from_pretrained(
+        pt_tokenizer_base = transformers.AutoTokenizer.from_pretrained(
             'neuralmind/bert-base-portuguese-cased'
         )
-        en_tokenizer_base = AutoTokenizer.from_pretrained(
+        en_tokenizer_base = transformers.AutoTokenizer.from_pretrained(
             'bert-base-uncased'
         )
 
